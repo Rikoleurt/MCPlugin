@@ -1,0 +1,5 @@
+name: RPG
+version: '1.0-SNAPSHOT'
+main: my.rpg.rPG.RPG
+api-version: '1.21'
+description: quick test to know how it works
