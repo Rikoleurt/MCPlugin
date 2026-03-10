@@ -1,5 +1,11 @@
 .gradle
 .jar
+
+.html
+.bin
+.lock
+.xml
+
 **/build/
 !**/src/**/build/
 
