@@ -53,3 +53,10 @@ processResources {
         expand props
     }
 }
+
+tasks.register('copyToServer', Copy) {
+    from jar
+    into "../../Server/plugins"
+}
+
+build.finalizedBy(copyToServer)
