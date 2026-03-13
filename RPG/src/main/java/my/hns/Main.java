@@ -3,8 +3,10 @@ package my.hns;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.World;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -69,6 +71,34 @@ public final class Main extends JavaPlugin implements Listener {
         getLogger().info("Player number: " + playerNb);
 
         getServer().getPluginManager().registerEvents(this, this);
+
+
+        GameTimer timer = new GameTimer(this, 20)
+                .onStart(() -> player.sendMessage("Timer started!"))
+                .onTick(() -> player.sendMessage("Tick"))
+                .onEnd(() -> player.sendMessage("Timer finished!"))
+                .onCancel(() -> player.sendMessage("Timer cancelled"));
+
+        timer.start();
+
+        ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
+        stand.setInvisible(true);
+        stand.setGravity(false);
+        stand.setMarker(true);
+        stand.addScoreboardTag("nointeract");
+
+        FallingBlock block = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
+        block.setDropItem(false);
+
+        stand.addPassenger(block);
+        var task = Bukkit.getScheduler().runTaskTimer(this, () -> {
+
+            if (!player.isOnline()) return;
+
+            Location loc2 = player.getLocation().add(0, 0.05, 0);
+            stand.teleport(loc2);
+
+        }, 1, 0L);
     }
 
     @EventHandler
