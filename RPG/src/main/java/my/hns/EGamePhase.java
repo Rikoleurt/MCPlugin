@@ -1,4 +1,4 @@
-package my.rpg.rPG.HNS;
+package my.hns;
 
 public enum EGamePhase {
 

@@ -1,4 +1,4 @@
-package my.rpg.rPG.HNS;
+package my.hns;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
