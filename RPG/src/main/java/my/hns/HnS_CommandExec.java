@@ -17,9 +17,6 @@ public class HnS_CommandExec implements CommandExecutor {
                 return true;
             }
         }
-
-
-
         return false;
     }
 }
