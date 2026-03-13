@@ -96,11 +96,6 @@ public final class Main extends JavaPlugin implements Listener {
         ItemMeta meta = i.getItemMeta();
         meta.displayName(Component.text(name));
     }
-
-    private void metaData(ItemStack i, String name, Material material, String ... lore) {
-        ItemMeta meta = i.getItemMeta();
-        meta.displayName(Component.text(name));
-    }
 }
 
 
