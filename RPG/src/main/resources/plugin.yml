@@ -1,6 +1,6 @@
 name: RPG
 version: '1.0-SNAPSHOT'
-main: my.rpg.rPG.RPG
+main: my.hns.Main
 api-version: '1.21'
 description: quick test to know how it works
 
@@ -14,9 +14,6 @@ commands:
   join:
     description: Join the game
     usage: /join <team>
-  hiders:
-    description: Hiders
-    usage: /hiders <command>
-  seekers:
-    description: Seekers
-    usage: /seekers <command>
+  team:
+    description: team list
+    usage: /team

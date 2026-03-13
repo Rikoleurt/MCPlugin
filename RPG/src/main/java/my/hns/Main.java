@@ -1,18 +1,23 @@
 package my.hns;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public final class Main extends JavaPlugin implements Listener {
 
+    public ArrayList<Player> Seekers = new ArrayList<Player>(5);
+    public ArrayList<Player> Hiders = new ArrayList<Player>(5);
+
     @Override
     public void onEnable() {
-        getLogger().info("Hello From RPG");
+        getLogger().info("Hello From Hide and Seek");
         LoadCommands();
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -28,7 +33,13 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     private void LoadCommands() {
-        Objects.requireNonNull(getCommand("squidGame")).setExecutor(new HnS_CommandExec());
-        Objects.requireNonNull(getCommand("StartGame")).setExecutor(new HnS_CommandExec());
+
+        HnS_CommandExec _commandExec = new HnS_CommandExec(this);
+
+        Objects.requireNonNull(getCommand("squidGame")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("StartGame")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("join")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("team")).setExecutor(_commandExec);
+
     }
 }

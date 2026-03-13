@@ -1,63 +1,80 @@
 package my.hns;
 
-import my.rpg.rPG.RPG;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class HnS_CommandExec implements CommandExecutor {
 
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(HnS_CommandExec.class);
     private final Logger logger = JavaPlugin.getProvidingPlugin(HnS_CommandExec.class).getLogger();
-    private final HnSMain hnsmain = new HnSMain(logger);
+    Main main;
 
+    public HnS_CommandExec(Main _main){
+        main = _main;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if(command.getName().equalsIgnoreCase("squidGame")) {
-            if (sender instanceof Player player) {
-                logger.info("command : squidGame launched");
-                player.sendMessage("SquidGame!");
-                return true;
-            }
-        }
-        if(command.getName().equalsIgnoreCase("join")) {
-            if(args[0].equalsIgnoreCase("hiders")) {
-                if (sender instanceof Player player) {
-                    player.sendMessage("Joining hiders!");
+        if (sender instanceof Player player){
+            switch (command.getName().toLowerCase()){
+                case "squidgame" :
+                {
+                    player.sendMessage(player.name() + " = SquidGame!");
+                    return true;
+                }
+
+                case "startgame":
+                {
+                    player.sendMessage("GameLaunched!");
+                    return true;
+                }
+
+                case "join": {
+                    String team = args[0].toLowerCase();
+
+                    if (team.equals("hider")) {
+                        main.Seekers.remove(player);
+                        main.Hiders.add(player);
+                    }
+                    if (team.equals("seeker")) {
+                        main.Hiders.remove(player);
+                        main.Seekers.add(player);
+
+                    }
+                    player.sendMessage("joined Team: " + team);
+
+                    return true;
+                }
+
+                case "team":
+                {
+                    List<String> names = new ArrayList<>();
+
+                    for (Player p : main.Seekers) {
+                        names.add(p.getName());
+                    }
+                    player.sendMessage("Seekers are: " + String.join(", ", names));
+                    names.clear();
+                    for (Player p : main.Hiders) {
+                        names.add(p.getName());
+                    }
+                    player.sendMessage("Hiders are: " + String.join(", ", names));
                     return true;
                 }
             }
-            if(args[0].equalsIgnoreCase("seekers")) {
-                if (sender instanceof Player player) {
-                    player.sendMessage("Joining seekers!");
-                    return true;
-                }
-            }
+
+
         }
-        if(command.getName().equalsIgnoreCase("hiders")){
-            if(args[0].equalsIgnoreCase("list")) {
-                if (sender instanceof Player) {
-                    logger.info("command : hiders list launched");
-                    return true;
-                }
-            }
-        }
-        // LIST
-        if(command.getName().equalsIgnoreCase("seekers")) {
-            if(args[0].equalsIgnoreCase("list")) {
-                if (sender instanceof Player player) {
-                    logger.info("command : seekers list launched");
-                    return true;
-                }
-            }
-        }
+
         return false;
     }
 }
