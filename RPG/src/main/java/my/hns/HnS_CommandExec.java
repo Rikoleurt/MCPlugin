@@ -1,5 +1,6 @@
 package my.hns;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,11 @@ public class HnS_CommandExec implements CommandExecutor {
 
                 case "startgame":
                 {
-                    player.sendMessage("GameLaunched!");
+                    try {
+                        main.startGame();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     return true;
                 }
 

@@ -3,6 +3,7 @@ package my.hns;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,8 +17,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+
+import static org.bukkit.Bukkit.getWorld;
 
 public final class Main extends JavaPlugin implements Listener {
 
@@ -36,11 +42,57 @@ public final class Main extends JavaPlugin implements Listener {
         Seekers.remove(player);
         if(!Hiders.contains(player)) Hiders.add(player);
     }
+
     public void addSeeker(Player player){
         Hiders.remove(player);
-        if(!Seekers.contains(player)) Seekers.add(player);
+        if(!Seekers.contains(player)){
+            getLogger().info("Player joined the seekers team!" + player.getName());
+            Seekers.add(player);
+        }
     }
     //endregion
+
+
+    public void startGame() throws InterruptedException {
+//        if(Seekers.size() <= 1 || Hiders.size() <= 1){
+//            getLogger().info("Not enough players!");
+//            return;
+//        }
+        int max = 200; // 10 seconds
+
+        new BukkitRunnable() {
+            int time = 0;
+
+            @Override
+            public void run() {
+
+                if(time % 20 == 0){
+                    getLogger().info("Tick! : " + (time / 20f) + "/" + (max / 20f));
+                    getServer().broadcast(Component.text((time / 20)));
+                }
+                for (Player p : Seekers) {
+                    p.teleport(new Location(getWorld("world"), -6, 72, -30));
+                    p.setGameMode(GameMode.ADVENTURE);
+                }
+                if (time > max) {
+                    cancel();
+                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -6, 72, -29), Material.AIR.createBlockData());
+                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -6, 73, -29), Material.AIR.createBlockData());
+                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -7, 72, -29), Material.AIR.createBlockData());
+                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -7, 73, -29), Material.AIR.createBlockData());
+                    getServer().broadcast(Component.text("Game Started!"));
+                    return;
+                }
+                time++;
+            }
+        }.runTaskTimer(this, 0, 1);
+        for(Player p : getServer().getOnlinePlayers()){
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999999999, 1));
+        }
+    }
+
+
 
     @Override
     public void onEnable() {
@@ -141,6 +193,7 @@ public final class Main extends JavaPlugin implements Listener {
             meta.lore(lores);
         }
         i.setItemMeta(meta);
+
         return i;
     }
 }
