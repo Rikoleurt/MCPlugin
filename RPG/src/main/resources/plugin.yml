@@ -13,7 +13,7 @@ commands:
     usage: /StartGame
   join:
     description: Join the game
-    usage: /join <team>
+    usage: /join <hider | seeker>
   team:
     description: team list
     usage: /team

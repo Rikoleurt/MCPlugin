@@ -40,6 +40,10 @@ public class HnS_CommandExec implements CommandExecutor {
 
                 case "join": {
                     String team = args[0].toLowerCase();
+                    if(!team.equals("hider") && !team.equals("seeker")){
+                        player.sendMessage("wrong Argument mgl");
+                        return  false;
+                    }
 
                     if (team.equals("hider")) {
                         main.addHider(player);
