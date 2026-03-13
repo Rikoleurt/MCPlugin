@@ -11,3 +11,12 @@ commands:
   StartGame:
     description: StartTheGame
     usage: /StartGame
+  join:
+    description: Join the game
+    usage: /join <team>
+  hiders:
+    description: Hiders
+    usage: /hiders <command>
+  seekers:
+    description: Seekers
+    usage: /seekers <command>
