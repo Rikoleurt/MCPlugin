@@ -42,13 +42,10 @@ public class HnS_CommandExec implements CommandExecutor {
                     String team = args[0].toLowerCase();
 
                     if (team.equals("hider")) {
-                        main.Seekers.remove(player);
-                        main.Hiders.add(player);
+                        main.addHider(player);
                     }
                     if (team.equals("seeker")) {
-                        main.Hiders.remove(player);
-                        main.Seekers.add(player);
-
+                        main.addSeeker(player);
                     }
                     player.sendMessage("joined Team: " + team);
 
@@ -59,12 +56,12 @@ public class HnS_CommandExec implements CommandExecutor {
                 {
                     List<String> names = new ArrayList<>();
 
-                    for (Player p : main.Seekers) {
+                    for (Player p : main.getSeekers()) {
                         names.add(p.getName());
                     }
                     player.sendMessage("Seekers are: " + String.join(", ", names));
                     names.clear();
-                    for (Player p : main.Hiders) {
+                    for (Player p : main.getHiders()) {
                         names.add(p.getName());
                     }
                     player.sendMessage("Hiders are: " + String.join(", ", names));

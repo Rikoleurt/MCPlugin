@@ -12,8 +12,26 @@ import java.util.Objects;
 
 public final class Main extends JavaPlugin implements Listener {
 
-    public ArrayList<Player> Seekers = new ArrayList<Player>(5);
-    public ArrayList<Player> Hiders = new ArrayList<Player>(5);
+    //region PlayerList
+    private ArrayList<Player> Seekers = new ArrayList<Player>(5);
+    private ArrayList<Player> Hiders = new ArrayList<Player>(5);
+
+    public ArrayList<Player> getSeekers() {
+        return Seekers;
+    }
+    public ArrayList<Player> getHiders() {
+        return Hiders;
+    }
+
+    public void addHider(Player player){
+        Seekers.remove(player);
+        if(!Hiders.contains(player)) Hiders.add(player);
+    }
+    public void addSeeker(Player player){
+        Hiders.remove(player);
+        if(!Seekers.contains(player)) Seekers.add(player);
+    }
+    //endregion
 
     @Override
     public void onEnable() {
@@ -43,3 +61,6 @@ public final class Main extends JavaPlugin implements Listener {
 
     }
 }
+
+
+
