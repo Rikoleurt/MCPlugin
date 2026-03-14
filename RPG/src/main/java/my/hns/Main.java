@@ -125,24 +125,6 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
 
-        GameTimer timer = new GameTimer(this, 200);
-
-
-
-        timer
-                .onStart(() -> player.sendMessage("Timer started!"))
-                .onTick(() ->
-                {
-                    int TicksLeft = timer.getTickLeft();
-                    if (TicksLeft % 20 == 0) {
-                        player.sendMessage("Time left: " + TicksLeft/20 + "s");
-                    }
-                })
-                .onEnd(() -> player.sendMessage("Timer finished!"))
-                .onCancel(() -> player.sendMessage("Timer cancelled"));
-
-        timer.start();
-
         ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
         stand.setInvisible(true);
         stand.setGravity(false);
@@ -161,6 +143,31 @@ public final class Main extends JavaPlugin implements Listener {
             stand.teleport(loc2);
 
         }, 1, 0L);
+
+        GameTimer timer = new GameTimer(this, 30,true);
+
+        timer
+                .onStart(() -> player.sendMessage("Timer started!"))
+                .onTick(() ->
+                {
+                    if (!player.isOnline()) timer.cancel();
+
+
+                    int TicksLeft = timer.getTickLeft();
+                    if (TicksLeft % 20 == 0) {
+                        player.sendMessage("Time left: " + TicksLeft/20 + "s");
+                    }
+                })
+                .onEnd(() ->{
+                    player.sendMessage("Timer finished new Block!");
+                    FallingBlock block2 = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
+                    block2.setDropItem(false);
+
+                    stand.addPassenger(block2);
+                })
+                .onCancel(() -> player.sendMessage("Timer cancelled"));
+
+        timer.start();
     }
 
     @EventHandler

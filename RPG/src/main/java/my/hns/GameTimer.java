@@ -22,6 +22,15 @@ public class GameTimer {
         this.plugin = plugin;
         this.maxTicks = maxTicks;
     }
+    /// if inSecond is false "maxSecond" will be counted as ticks
+    public GameTimer(JavaPlugin plugin, int maxSeconds, boolean inSeconds) {
+        this.plugin = plugin;
+        if(inSeconds){
+            this.maxTicks = maxSeconds * 20;
+        }else{
+            this.maxTicks = maxSeconds;
+        }
+    }
 
     public GameTimer onStart(Runnable r) {
         this.onStart = r;
