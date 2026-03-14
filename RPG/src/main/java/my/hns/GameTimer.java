@@ -85,4 +85,12 @@ public class GameTimer {
     public int getTime() {
         return time;
     }
+
+    public int getMaxTime() {
+        return maxTicks;
+    }
+
+    public int getTickLeft(){
+        return maxTicks-time;
+    }
 }

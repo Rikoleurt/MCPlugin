@@ -125,9 +125,19 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
 
-        GameTimer timer = new GameTimer(this, 20)
+        GameTimer timer = new GameTimer(this, 200);
+
+
+
+        timer
                 .onStart(() -> player.sendMessage("Timer started!"))
-                .onTick(() -> player.sendMessage("Tick"))
+                .onTick(() ->
+                {
+                    int TicksLeft = timer.getTickLeft();
+                    if (TicksLeft % 20 == 0) {
+                        player.sendMessage("Time left: " + TicksLeft/20 + "s");
+                    }
+                })
                 .onEnd(() -> player.sendMessage("Timer finished!"))
                 .onCancel(() -> player.sendMessage("Timer cancelled"));
 
