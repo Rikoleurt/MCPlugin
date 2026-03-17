@@ -79,6 +79,7 @@ public class HnS_CommandExec implements CommandExecutor {
 
                 case "setseekerstart":{
                     main.seekerCage = player.getLocation();
+                    main.seekerCageRotationYaw= player.getYaw();
                     return true;
                 }
             }

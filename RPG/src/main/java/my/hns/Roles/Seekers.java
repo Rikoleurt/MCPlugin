@@ -18,10 +18,7 @@ import java.time.Duration;
 public class Seekers extends Roles  {
 
     public Seekers(Player p, Main m){
-        player = p;
-        main = m;
-
-        RegisterEvents();
+        super(p,m);
     }
 
     @Override
@@ -29,7 +26,6 @@ public class Seekers extends Roles  {
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 3));
         var timer = new GameTimer(main,15,true);
-        player.sendMessage("SEEKER TAMERE");
         timer.onTick(() -> {
 
             int TicksLeft = timer.getTickLeft();
@@ -58,7 +54,7 @@ public class Seekers extends Roles  {
                     15.0f,
                     .75f
             );
-                });
+        });
 
         timer.start();
     }

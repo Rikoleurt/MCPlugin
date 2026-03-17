@@ -1,5 +1,6 @@
 package my.hns;
 
+import my.hns.Roles.Hider;
 import my.hns.Roles.Seekers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -26,6 +27,7 @@ public final class Main extends JavaPlugin implements Listener {
     private ArrayList<Player> Hiders = new ArrayList<Player>(5);
 
     public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
+    public float seekerCageRotationYaw = 0;
 
     public ArrayList<Player> getSeekers() {
         return Seekers;
@@ -55,25 +57,28 @@ public final class Main extends JavaPlugin implements Listener {
 //            return;
 //        }
 
-        for(Player p : Seekers)
-        {
+        for(Player p : Hiders){
+            p.getInventory().clear();
+
+            p.teleport(new Location(p.getWorld(),0,100,0));
+            Hider h = new Hider(p,this);
+            h.OnGameStart();
+        }
+
+        for(Player p : Seekers) {
+            p.getInventory().clear();
+
             p.teleport(seekerCage);
             p.setRotation(179.9f,0);
             Seekers s = new Seekers(p,this);
 
             s.OnGameStart();
         }
-
-        for(Player p : getServer().getOnlinePlayers()){
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
-            p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999999999, 1));
-
-        }
     }
 
     @Override
     public void onEnable() {
-        getLogger().info("Hello From Hide and Seek");
+        getLogger().info("Hello From Hide and Seek V1");
         LoadCommands();
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -96,51 +101,6 @@ public final class Main extends JavaPlugin implements Listener {
         Inventory playerInv = player.getInventory();
         if(playerInv.getItem(0) == null) playerInv.addItem(new ItemStack(Material.DIAMOND));
 
-        int playerNb = getServer().getOnlinePlayers().size();
-        getLogger().info("Player number: " + playerNb);
-
-        getServer().getPluginManager().registerEvents(this, this);
-
-
-        ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-        stand.setInvisible(true);
-        stand.setGravity(false);
-        stand.setMarker(true);
-        stand.addScoreboardTag("nointeract");
-
-        FallingBlock block = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
-        block.setDropItem(false);
-        block.setNoPhysics(true);
-        block.shouldAutoExpire(false);
-
-        player.getVelocity();
-
-        stand.addPassenger(block);
-        var task = Bukkit.getScheduler().runTaskTimer(this, () -> {
-
-            if (!player.isOnline()) return;
-
-            Location loc2 = player.getLocation().add(0, 0.05, 0);
-            stand.teleport(loc2);
-
-        }, 1, 0L);
-
-        GameTimer timer = new GameTimer(this, 30,true);
-
-        timer
-                .onStart(() -> player.sendMessage("Timer started!"))
-                .onTick(() ->
-                {
-                    if (!player.isOnline()) timer.cancel();
-
-
-                    int TicksLeft = timer.getTickLeft();
-                    if (TicksLeft % 20 == 0) {
-                        player.sendMessage("Time left: " + TicksLeft/20 + "s");
-                    }
-                });
-
-        timer.start();
     }
 
     @EventHandler

@@ -10,6 +10,13 @@ public abstract class Roles implements Listener {
     public Player player;
     public Main main;
 
+    public Roles(Player p, Main m) {
+        this.player = p;
+        this.main = m;
+
+        RegisterEvents();
+    }
+
     public abstract void OnGameStart();
 
     public abstract void RegisterEvents();
