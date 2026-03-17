@@ -1,12 +1,9 @@
 package my.hns;
 
+import my.hns.Roles.Seekers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,17 +16,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-
-import static org.bukkit.Bukkit.getWorld;
 
 public final class Main extends JavaPlugin implements Listener {
 
     //region PlayerList
     private ArrayList<Player> Seekers = new ArrayList<Player>(5);
     private ArrayList<Player> Hiders = new ArrayList<Player>(5);
+
+    public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
 
     public ArrayList<Player> getSeekers() {
         return Seekers;
@@ -58,41 +54,22 @@ public final class Main extends JavaPlugin implements Listener {
 //            getLogger().info("Not enough players!");
 //            return;
 //        }
-        int max = 200; // 10 seconds
 
-        new BukkitRunnable() {
-            int time = 0;
+        for(Player p : Seekers)
+        {
+            p.teleport(seekerCage);
+            p.setRotation(179.9f,0);
+            Seekers s = new Seekers(p,this);
 
-            @Override
-            public void run() {
+            s.OnGameStart();
+        }
 
-                if(time % 20 == 0){
-                    getLogger().info("Tick! : " + (time / 20f) + "/" + (max / 20f));
-                    getServer().broadcast(Component.text((time / 20)));
-                }
-                for (Player p : Seekers) {
-                    p.teleport(new Location(getWorld("world"), -6, 72, -30));
-                    p.setGameMode(GameMode.ADVENTURE);
-                }
-                if (time > max) {
-                    cancel();
-                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -6, 72, -29), Material.AIR.createBlockData());
-                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -6, 73, -29), Material.AIR.createBlockData());
-                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -7, 72, -29), Material.AIR.createBlockData());
-                    Objects.requireNonNull(getWorld("world")).setBlockData(new Location(getWorld("world"), -7, 73, -29), Material.AIR.createBlockData());
-                    getServer().broadcast(Component.text("Game Started!"));
-                    return;
-                }
-                time++;
-            }
-        }.runTaskTimer(this, 0, 1);
         for(Player p : getServer().getOnlinePlayers()){
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999999999, 1));
+
         }
     }
-
-
 
     @Override
     public void onEnable() {
@@ -133,6 +110,10 @@ public final class Main extends JavaPlugin implements Listener {
 
         FallingBlock block = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
         block.setDropItem(false);
+        block.setNoPhysics(true);
+        block.shouldAutoExpire(false);
+
+        player.getVelocity();
 
         stand.addPassenger(block);
         var task = Bukkit.getScheduler().runTaskTimer(this, () -> {
@@ -157,15 +138,7 @@ public final class Main extends JavaPlugin implements Listener {
                     if (TicksLeft % 20 == 0) {
                         player.sendMessage("Time left: " + TicksLeft/20 + "s");
                     }
-                })
-                .onEnd(() ->{
-                    player.sendMessage("Timer finished new Block!");
-                    FallingBlock block2 = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
-                    block2.setDropItem(false);
-
-                    stand.addPassenger(block2);
-                })
-                .onCancel(() -> player.sendMessage("Timer cancelled"));
+                });
 
         timer.start();
     }
@@ -192,7 +165,9 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("squidGame")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("StartGame")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("join")).setExecutor(_commandExec);
-        Objects.requireNonNull(getCommand("team")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("teamlist")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(_commandExec);
+
     }
 
     private ItemStack metaData(ItemStack i, String name, String ... lore) {

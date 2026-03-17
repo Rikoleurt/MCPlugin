@@ -14,6 +14,9 @@ commands:
   join:
     description: Join the game
     usage: /join <hider | seeker>
-  team:
+  teamlist:
     description: team list
-    usage: /team
+    usage: /teamlist
+  setSeekerStart:
+    description: tkt
+    usage: /setSeekerStart

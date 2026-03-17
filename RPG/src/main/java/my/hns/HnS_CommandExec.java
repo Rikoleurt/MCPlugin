@@ -61,7 +61,7 @@ public class HnS_CommandExec implements CommandExecutor {
                     return true;
                 }
 
-                case "team":
+                case "teamlist":
                 {
                     List<String> names = new ArrayList<>();
 
@@ -74,6 +74,11 @@ public class HnS_CommandExec implements CommandExecutor {
                         names.add(p.getName());
                     }
                     player.sendMessage("Hiders are: " + String.join(", ", names));
+                    return true;
+                }
+
+                case "setseekerstart":{
+                    main.seekerCage = player.getLocation();
                     return true;
                 }
             }
