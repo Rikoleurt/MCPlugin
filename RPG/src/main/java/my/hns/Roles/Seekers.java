@@ -66,6 +66,6 @@ public class Seekers extends Roles  {
 
     @EventHandler
     public void onPlayerAttack(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
-        if(event.getAttacked() instanceof FallingBlock) player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
+        player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
     }
 }

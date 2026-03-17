@@ -16,7 +16,8 @@ public class GameTimer {
 
     private int maxTicks = 2000;
     private int time = 0;
-    private boolean paused = false;
+    private boolean isStarted = false;
+    private boolean isPaused = false;
 
     public GameTimer(JavaPlugin plugin, int maxTicks) {
         this.plugin = plugin;
@@ -34,6 +35,7 @@ public class GameTimer {
 
     public GameTimer onStart(Runnable r) {
         this.onStart = r;
+        isStarted = true;
         return this;
     }
 
@@ -44,15 +46,18 @@ public class GameTimer {
 
     public GameTimer onEnd(Runnable r) {
         this.onEnd = r;
+        isStarted = false;
         return this;
     }
 
     public GameTimer onCancel(Runnable r) {
         this.onCancel = r;
+        isStarted = false;
         return this;
     }
 
     public void start() {
+        time = 0;
 
         onStart.run();
 
@@ -60,7 +65,7 @@ public class GameTimer {
             @Override
             public void run() {
 
-                if (paused) return;
+                if (isPaused) return;
 
                 if (time >= maxTicks) {
                     onEnd.run();
@@ -76,19 +81,30 @@ public class GameTimer {
         runnable.runTaskTimer(plugin, 0L, 1L);
     }
 
-    public void pause() {
-        paused = true;
-    }
-
-    public void resume() {
-        paused = false;
-    }
-
     public void cancel() {
         if (runnable != null) {
             runnable.cancel();
             onCancel.run();
+            isStarted = false;
         }
+    }
+
+    public void pause() {
+        isPaused = true;
+    }
+
+    public void resume() {
+        isPaused = false;
+    }
+
+    public  boolean getIsStarted ()
+    {
+        return isStarted;
+    }
+
+    public  boolean getIsPaused ()
+    {
+        return isPaused;
     }
 
     public int getTime() {
@@ -102,4 +118,6 @@ public class GameTimer {
     public int getTickLeft(){
         return maxTicks-time;
     }
+
+    public float getPercentageLeft() { return 1-(((float)time)/(float)maxTicks); }
 }
