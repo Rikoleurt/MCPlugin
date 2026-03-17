@@ -4,6 +4,7 @@ import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import my.hns.Roles.Hider;
 import my.hns.Roles.Seekers;
 import my.hns.commands.Menu;
+import my.hns.visuals.Board;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -28,6 +29,7 @@ public final class Main extends JavaPlugin implements Listener {
     public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
     public float seekerCageRotationYaw = 0;
     public static Main instance;
+    Board board = Board.instance;
 
     public ArrayList<Player> getSeekers() {
         return Seekers;
@@ -95,13 +97,12 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Game instruction
         Player player = event.getPlayer();
-        Component c = Component.text("Welcome to the server " + player.getName() + "");
         player.sendMessage(Component.text(" ** Welcome to the game! Please join a team by right clicking the diamond in your inventory. **"));
 
         // Lobby set up
         Inventory playerInv = player.getInventory();
         if(playerInv.getItem(0) == null) playerInv.addItem(new ItemStack(Material.DIAMOND));
-
+        board.newScoreboard(player);
     }
 
     @EventHandler

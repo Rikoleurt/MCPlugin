@@ -1,6 +1,7 @@
 package my.hns.commands;
 
 import my.hns.Main;
+import my.hns.visuals.Board;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
@@ -28,7 +29,7 @@ public class Menu implements Listener, CommandExecutor {
 
     private final Component invName = Component.text("Team selector");
     private final Inventory inv = Bukkit.createInventory(null, 27, invName);
-
+    private final Board board = Board.instance;
     public Menu(Main plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -85,12 +86,14 @@ public class Menu implements Listener, CommandExecutor {
             Title title = Title.title(Component.text("You joined the seekers!", TextColor.color(0x2CE4FF)), Component.text("Have fun!"));
             inv.close();
             player.showTitle(title);
+            board.updateScoreboard(player);
         }
         if(slot == 14){
             Main.instance.addHider(player);
             Title title = Title.title(Component.text("You joined the hiders!", TextColor.color(0xFF964A)), Component.text("Have fun!"));
             inv.close();
             player.showTitle(title);
+            board.updateScoreboard(player);
 
         }
         // Blague à faire plus tard
