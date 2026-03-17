@@ -1,7 +1,9 @@
 package my.hns;
 
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import my.hns.Roles.Hider;
 import my.hns.Roles.Seekers;
+import my.hns.commands.Menu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -15,8 +17,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -25,9 +25,9 @@ public final class Main extends JavaPlugin implements Listener {
     //region PlayerList
     private ArrayList<Player> Seekers = new ArrayList<Player>(5);
     private ArrayList<Player> Hiders = new ArrayList<Player>(5);
-
     public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
     public float seekerCageRotationYaw = 0;
+    public static Main instance;
 
     public ArrayList<Player> getSeekers() {
         return Seekers;
@@ -78,8 +78,9 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        instance = this;
         getLogger().info("Hello From Hide and Seek V1");
-        LoadCommands();
+        loadCommands();
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -94,8 +95,8 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Game instruction
         Player player = event.getPlayer();
-        player.sendMessage("** Please join a team with the /join <team> command ** ");
-        player.sendMessage("** There must be at least one player in the seekers team and one player in the hiders team **");
+        Component c = Component.text("Welcome to the server " + player.getName() + "");
+        player.sendMessage(Component.text(" ** Welcome to the game! Please join a team by right clicking the diamond in your inventory. **"));
 
         // Lobby set up
         Inventory playerInv = player.getInventory();
@@ -105,21 +106,21 @@ public final class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Inventory inv = Bukkit.createInventory(null, 27, Component.text("Team selector"));
-        ItemStack sword = new ItemStack(Material.SOUL_LANTERN);
-        ItemStack pot = new ItemStack(Material.FLOWER_POT);
-        inv.setItem(12, metaData(sword, "Seekers"));
-        inv.setItem(14, metaData(pot, "Hiders"));
         if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND)) {
                 getLogger().info("Player interacted with: " + Material.DIAMOND);
-                event.getPlayer().openInventory(inv);
+                new Menu(this).openMenuInventory(event.getPlayer());
             }
         }
     }
 
+    @EventHandler
+    public void onPlayerTakeItem(PlayerInventorySlotChangeEvent event){
+        getLogger().info("Player took item: " + event.getPlayer().getName());
+    }
 
-    private void LoadCommands() {
+
+    private void loadCommands() {
         HnS_CommandExec _commandExec = new HnS_CommandExec(this);
 
         Objects.requireNonNull(getCommand("squidGame")).setExecutor(_commandExec);
@@ -127,6 +128,7 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("join")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("teamlist")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("menu")).setExecutor(new Menu(this));
 
     }
 
