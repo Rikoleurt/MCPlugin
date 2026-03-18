@@ -20,3 +20,6 @@ commands:
   setSeekerStart:
     description: tkt
     usage: /setSeekerStart
+  menu:
+    description: Open the menu
+    usage: /menu
