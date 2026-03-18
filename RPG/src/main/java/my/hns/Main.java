@@ -50,8 +50,10 @@ public final class Main extends JavaPlugin implements Listener {
     }
     //endregion
 
+    public HashMap<Location,Hider> hider_PosedBlock;
 
     public void startGame() throws InterruptedException {
+        hider_PosedBlock = new HashMap<>(3);
 //        if(Seekers.size() <= 1 || Hiders.size() <= 1){
 //            getLogger().info("Not enough players!");
 //            return;

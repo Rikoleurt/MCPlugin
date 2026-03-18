@@ -6,10 +6,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.FallingBlock;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -25,7 +28,7 @@ public class Seekers extends Roles  {
     public void OnGameStart() {
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 3));
-        var timer = new GameTimer(main,15,true);
+        var timer = GameTimer.fromSeconds(main,15);
         timer.onTick(() -> {
 
             int TicksLeft = timer.getTickLeft();
@@ -65,7 +68,23 @@ public class Seekers extends Roles  {
     }
 
     @EventHandler
-    public void onPlayerAttack(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
+    public void onPlayerAttackFallingBlock(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
         player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
     }
+
+    @EventHandler
+    public void onPlayerAttackSolidBlock(PlayerInteractEvent event){
+        if(event.getAction().isRightClick()) return;
+
+        var bloc = event.getClickedBlock();
+        if(bloc != null || bloc.getType() != Material.AIR)
+        {
+                var misterX = main.hider_PosedBlock.get(bloc.getLocation());
+                if(misterX == null) player.sendMessage("no block found in HashMap");
+                else player.sendMessage("Found "+ misterX.player.getName());
+        }
+        else player.sendMessage("No block Found");
+
+    }
+
 }

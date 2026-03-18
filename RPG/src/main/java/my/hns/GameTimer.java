@@ -5,7 +5,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class GameTimer {
 
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
 
     private Runnable onStart = () -> {};
     private Runnable onTick = () -> {};
@@ -14,8 +14,8 @@ public class GameTimer {
 
     private BukkitRunnable runnable;
 
-    private int maxTicks = 2000;
-    private int time = 0;
+    private final int maxTicks;
+    private int time;
     private boolean isStarted = false;
     private boolean isPaused = false;
 
@@ -23,19 +23,15 @@ public class GameTimer {
         this.plugin = plugin;
         this.maxTicks = maxTicks;
     }
-    /// if inSecond is false "maxSecond" will be counted as ticks
-    public GameTimer(JavaPlugin plugin, int maxSeconds, boolean inSeconds) {
-        this.plugin = plugin;
-        if(inSeconds){
-            this.maxTicks = maxSeconds * 20;
-        }else{
-            this.maxTicks = maxSeconds;
-        }
+    public static GameTimer fromSeconds(JavaPlugin plugin, int seconds) {
+        return new GameTimer(plugin, seconds * 20);
     }
 
+    public static GameTimer fromTicks(JavaPlugin plugin, int ticks) {
+        return new GameTimer(plugin, ticks);
+    }
     public GameTimer onStart(Runnable r) {
         this.onStart = r;
-        isStarted = true;
         return this;
     }
 
@@ -46,13 +42,11 @@ public class GameTimer {
 
     public GameTimer onEnd(Runnable r) {
         this.onEnd = r;
-        isStarted = false;
         return this;
     }
 
     public GameTimer onCancel(Runnable r) {
         this.onCancel = r;
-        isStarted = false;
         return this;
     }
 
@@ -119,5 +113,5 @@ public class GameTimer {
         return maxTicks-time;
     }
 
-    public float getPercentageLeft() { return 1-(((float)time)/(float)maxTicks); }
+    public float getPercentageLeft() { return 1f - ((float) time / maxTicks); }
 }
