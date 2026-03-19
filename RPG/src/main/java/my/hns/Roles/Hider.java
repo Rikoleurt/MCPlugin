@@ -12,6 +12,7 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 public class Hider extends Roles{
 
@@ -31,10 +32,16 @@ public class Hider extends Roles{
             var blockData = p.getWorld().getBlockData(p.getLocation());
             p.getWorld().setBlockData(p.getLocation(), Material.STONE.createBlockData());
             LastPosedBlockPos = p.getLocation();
+
+            main.getLogger().info(LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
             p.setGameMode(GameMode.SPECTATOR);
+            main.getLogger().info("LE 2 "  + LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
+
 
             //REGISTER TO MAIN
-            main.hider_PosedBlock.put(LastPosedBlockPos,this);
+
+            var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+            main.hider_PosedBlock.put(v,this);
         });
 
     }
@@ -74,7 +81,7 @@ public class Hider extends Roles{
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
-
+        if(event.getPlayer() != player) return;
         if (
             event.getFrom().getBlockX() != event.getTo().getBlockX()
             || event.getFrom().getBlockY() != event.getTo().getBlockY()
@@ -83,7 +90,9 @@ public class Hider extends Roles{
             if(player.getGameMode() == GameMode.SPECTATOR){
                 player.setGameMode(GameMode.CREATIVE); // DEBUG PURPOZSE SHOULD BE ADVENTURE
                 player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
-                main.hider_PosedBlock.remove(LastPosedBlockPos);
+
+                var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+                main.hider_PosedBlock.remove(v);
             }
 
             lastMovedSince.cancel();

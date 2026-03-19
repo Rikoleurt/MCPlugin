@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -52,7 +53,7 @@ public final class Main extends JavaPlugin implements Listener {
     }
     //endregion
 
-    public HashMap<Location,Hider> hider_PosedBlock;
+    public HashMap<Vector,Hider> hider_PosedBlock;
 
     public void startGame() throws InterruptedException {
         hider_PosedBlock = new HashMap<>(3);

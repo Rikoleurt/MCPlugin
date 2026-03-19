@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.time.Duration;
 
@@ -79,7 +80,10 @@ public class Seekers extends Roles  {
         var bloc = event.getClickedBlock();
         if(bloc != null || bloc.getType() != Material.AIR)
         {
-                var misterX = main.hider_PosedBlock.get(bloc.getLocation());
+            var LastPosedBlockPos =bloc.getLocation();
+            var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+
+                var misterX = main.hider_PosedBlock.get(v);
                 if(misterX == null) player.sendMessage("no block found in HashMap");
                 else player.sendMessage("Found "+ misterX.player.getName());
         }
