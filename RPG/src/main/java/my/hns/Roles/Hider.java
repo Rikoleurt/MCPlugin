@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 public class Hider extends Roles{
@@ -23,6 +24,7 @@ public class Hider extends Roles{
 
     ArmorStand armorStandFollower;
     FallingBlock fallingBlockFollower;
+    BukkitTask taskFollower;
 
     public Hider(Player p){
         super(p);
@@ -70,7 +72,7 @@ public class Hider extends Roles{
 
         armorStandFollower.addPassenger(fallingBlockFollower);
 
-        var task = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
+        taskFollower = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
 
             if (!player.isOnline()) return;
 
@@ -116,6 +118,9 @@ public class Hider extends Roles{
         isDead = true;
         player.setGameMode(GameMode.SPECTATOR);
 
+        taskFollower.cancel();
+        fallingBlockFollower.remove();
+        armorStandFollower.remove();
         lastMovedSince.cancel();
 
         var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
