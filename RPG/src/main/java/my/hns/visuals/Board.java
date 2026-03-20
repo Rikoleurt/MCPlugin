@@ -1,29 +1,37 @@
 package my.hns.visuals;
 
 import my.hns.Main;
-import my.hns.Roles.Roles;
-import net.kyori.adventure.Adventure;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Criteria;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.*;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Board implements Runnable {
-    public final static Board instance = new Board();
 
-    private Board() {}
+    public final static Board instance = new Board();
+    private final static Main main = Main.instance;
+
+    private Board() {
+    }
 
     @Override
     public void run() {
-
+        Main.instance.getLogger().info("Updating scoreboards");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) {
+                Main.instance.getLogger().info("Updating scoreboard for " + player.getName());
+                updateScoreboard(player);
+            } else {
+                newScoreboard(player);
+            }
+        }
     }
 
     public void newScoreboard(Player player) {
@@ -31,7 +39,7 @@ public class Board implements Runnable {
         Objective o = s.registerNewObjective(Main.instance.getName(), Criteria.DUMMY, Component.text("test"));
 
         o.setDisplaySlot(DisplaySlot.SIDEBAR);
-        o.displayName(Component.text("========== Hide and Seek ==========", TextColor.color(0xFF964A)));
+        o.displayName(Component.text("===== Hide and Seek =====", TextColor.color(0x9D670C)));
         o.getScore("").setScore(6);
         o.getScore("").setScore(5);
         o.getScore("").setScore(4);
@@ -40,12 +48,62 @@ public class Board implements Runnable {
         o.getScore("").setScore(1);
 
         player.setScoreboard(s);
+
     }
 
     public void updateScoreboard(Player player) {
+        Main.instance.getLogger().info("Updating scoreboard for " + player.getName());
+
         Scoreboard s = player.getScoreboard();
+        Objective o = s.getObjective(DisplaySlot.SIDEBAR);
+
+        ArrayList<Player> hiders = Main.instance.getHiders();
+
+        boolean isHider = hiders.contains(player);
+        List<String> entries = new ArrayList<>();
+
+        s.getEntries().forEach(s::resetScores);
+
+        showMates(player, entries);
+        showLines(o, entries);
+    }
+
+    /**
+     * Show the mates of the player on the scoreboard
+     * @param player the current player
+     * @param lines the lines to show
+     */
+    private void showMates(Player player, List<String> lines) {
         ArrayList<Player> hiders = Main.instance.getHiders();
         ArrayList<Player> seekers = Main.instance.getSeekers();
 
+        boolean isHider = hiders.contains(player);
+        lines.add(" ");
+
+        if (isHider) {
+            for (Player p : hiders) {
+                lines.add(ChatColor.GOLD + "===== Team - Hider =====");
+                lines.add(ChatColor.GOLD + p.getName());
+            }
+        } else {
+            for (Player p : seekers) {
+                lines.add(ChatColor.AQUA + "===== Team - Seeker =====");
+                lines.add(ChatColor.AQUA + p.getName());
+            }
+        }
+    }
+
+    /**
+     * Show the lines we registered on the scoreboard
+     * @param o the scoreboard objectives
+     * @param lines the lines to show
+     */
+    private void showLines(Objective o, List<String> lines) {
+        int score = lines.size();
+        for (String line : lines) {
+            if(score > 15) break;
+            o.getScore(line).setScore(score);
+            score--;
+        }
     }
 }
