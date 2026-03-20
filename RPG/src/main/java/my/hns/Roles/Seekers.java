@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -21,15 +22,15 @@ import java.time.Duration;
 
 public class Seekers extends Roles  {
 
-    public Seekers(Player p, Main m){
-        super(p,m);
+    public Seekers(Player p){
+        super(p);
     }
 
     @Override
     public void OnGameStart() {
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 3));
-        var timer = GameTimer.fromSeconds(main,15);
+        var timer = GameTimer.fromSeconds(Main.instance,15);
         timer.onTick(() -> {
 
             int TicksLeft = timer.getTickLeft();
@@ -65,30 +66,39 @@ public class Seekers extends Roles  {
 
     @Override
     public void RegisterEvents() {
-        Bukkit.getServer().getPluginManager().registerEvents(this,main);
+        Bukkit.getServer().getPluginManager().registerEvents(this,Main.instance);
     }
 
     @EventHandler
     public void onPlayerAttackFallingBlock(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
         player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
+
+        if (!event.getAttacked().getName().equals("Falling block")) return;
+
+
+
+
     }
 
     @EventHandler
     public void onPlayerAttackSolidBlock(PlayerInteractEvent event){
+        if(event.getPlayer() != player) return;
         if(event.getAction().isRightClick()) return;
 
         var bloc = event.getClickedBlock();
-        if(bloc != null || bloc.getType() != Material.AIR)
-        {
-            var LastPosedBlockPos =bloc.getLocation();
-            var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+        if(bloc == null || bloc.getType() == Material.AIR) return;
 
-                var misterX = main.hider_PosedBlock.get(v);
-                if(misterX == null) player.sendMessage("no block found in HashMap");
-                else player.sendMessage("Found "+ misterX.player.getName());
-        }
-        else player.sendMessage("No block Found");
+        var LastPosedBlockPos =bloc.getLocation();
+        var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
 
+        var misterX = Main.instance.hider_PosedBlock.get(v);
+
+        if(misterX == null) {player.sendMessage("no block found in HashMap"); return;}
+
+        Main.instance.hider_PosedBlock.remove(v);
+        player.sendMessage("Found "+ misterX.player.getName());
+        misterX.player.setGameMode(GameMode.ADVENTURE);
+        misterX.player.damage(2,player);
     }
 
 }

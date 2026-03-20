@@ -1,6 +1,5 @@
 package my.hns;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,11 +16,6 @@ public class HnS_CommandExec implements CommandExecutor {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(HnS_CommandExec.class);
     private final Logger logger = JavaPlugin.getProvidingPlugin(HnS_CommandExec.class).getLogger();
-    Main main;
-
-    public HnS_CommandExec(Main _main){
-        main = _main;
-    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
@@ -36,7 +30,7 @@ public class HnS_CommandExec implements CommandExecutor {
                 case "startgame":
                 {
                     try {
-                        main.startGame();
+                        Main.instance.startGame();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -51,10 +45,10 @@ public class HnS_CommandExec implements CommandExecutor {
                     }
 
                     if (team.equals("hider")) {
-                        main.addHider(player);
+                        Main.instance.addHider(player);
                     }
                     if (team.equals("seeker")) {
-                        main.addSeeker(player);
+                        Main.instance.addSeeker(player);
                     }
                     player.sendMessage("joined Team: " + team);
 
@@ -65,12 +59,12 @@ public class HnS_CommandExec implements CommandExecutor {
                 {
                     List<String> names = new ArrayList<>();
 
-                    for (Player p : main.getSeekers()) {
+                    for (Player p : Main.instance.getSeekers()) {
                         names.add(p.getName());
                     }
                     player.sendMessage("Seekers are: " + String.join(", ", names));
                     names.clear();
-                    for (Player p : main.getHiders()) {
+                    for (Player p : Main.instance.getHiders()) {
                         names.add(p.getName());
                     }
                     player.sendMessage("Hiders are: " + String.join(", ", names));
@@ -78,8 +72,8 @@ public class HnS_CommandExec implements CommandExecutor {
                 }
 
                 case "setseekerstart":{
-                    main.seekerCage = player.getLocation();
-                    main.seekerCageRotationYaw= player.getYaw();
+                    Main.instance.seekerCage = player.getLocation();
+                    Main.instance.seekerCageRotationYaw= player.getYaw();
                     return true;
                 }
             }

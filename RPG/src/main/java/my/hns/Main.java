@@ -66,7 +66,7 @@ public final class Main extends JavaPlugin implements Listener {
             p.getInventory().clear();
 
             p.teleport(new Location(p.getWorld(),0,100,0));
-            Hider h = new Hider(p,this);
+            Hider h = new Hider(p);
             h.OnGameStart();
         }
 
@@ -75,7 +75,7 @@ public final class Main extends JavaPlugin implements Listener {
 
             p.teleport(seekerCage);
             p.setRotation(179.9f,0);
-            Seekers s = new Seekers(p,this);
+            Seekers s = new Seekers(p);
 
             s.OnGameStart();
         }

@@ -8,11 +8,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class Roles implements Listener {
 
     public Player player;
-    public Main main;
 
-    public Roles(Player p, Main m) {
+    public Roles(Player p) {
         this.player = p;
-        this.main = m;
 
         RegisterEvents();
     }

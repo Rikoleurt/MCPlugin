@@ -16,11 +16,11 @@ import org.bukkit.util.Vector;
 
 public class Hider extends Roles{
 
-    GameTimer lastMovedSince = GameTimer.fromSeconds(main,3);
+    GameTimer lastMovedSince = GameTimer.fromSeconds(Main.instance,3);
     Location LastPosedBlockPos;
 
-    public Hider(Player p, Main m){
-        super(p,m);
+    public Hider(Player p){
+        super(p);
 
         lastMovedSince.
         onTick(() -> {
@@ -33,20 +33,22 @@ public class Hider extends Roles{
             p.getWorld().setBlockData(p.getLocation(), Material.STONE.createBlockData());
             LastPosedBlockPos = p.getLocation();
 
-            main.getLogger().info(LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
+            Main.instance.getLogger().info(LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
             p.setGameMode(GameMode.SPECTATOR);
-            main.getLogger().info("LE 2 "  + LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
+            Main.instance.getLogger().info("LE 2 "  + LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
 
 
             //REGISTER TO MAIN
 
             var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-            main.hider_PosedBlock.put(v,this);
+            Main.instance.hider_PosedBlock.put(v,this);
         });
 
     }
     @Override
     public void OnGameStart() {
+
+        player.setMaxHealth(4);
 
         ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
         stand.setInvisible(true);
@@ -58,11 +60,11 @@ public class Hider extends Roles{
         FallingBlock block = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
         block.setDropItem(false);
         block.setNoPhysics(true);
-        block.shouldAutoExpire(true); // NEED TO BE FALSE DEBUG PURPOSE ONLY
+        block.shouldAutoExpire(false);
 
         stand.addPassenger(block);
 
-        var task = Bukkit.getScheduler().runTaskTimer(main, () -> {
+        var task = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
 
             if (!player.isOnline()) return;
 
@@ -74,7 +76,7 @@ public class Hider extends Roles{
 
     @Override
     public void RegisterEvents() {
-        Bukkit.getServer().getPluginManager().registerEvents(this,main);
+        Bukkit.getServer().getPluginManager().registerEvents(this,Main.instance);
     }
 
 
@@ -88,11 +90,11 @@ public class Hider extends Roles{
             || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
         ){
             if(player.getGameMode() == GameMode.SPECTATOR){
-                player.setGameMode(GameMode.CREATIVE); // DEBUG PURPOZSE SHOULD BE ADVENTURE
+                player.setGameMode(GameMode.ADVENTURE);
                 player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
 
                 var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-                main.hider_PosedBlock.remove(v);
+                Main.instance.hider_PosedBlock.remove(v);
             }
 
             lastMovedSince.cancel();
