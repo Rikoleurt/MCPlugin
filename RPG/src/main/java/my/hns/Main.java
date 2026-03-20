@@ -19,10 +19,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
+
 
     //region PlayerList
     private ArrayList<Player> Seekers = new ArrayList<Player>(5);
@@ -31,6 +33,7 @@ public final class Main extends JavaPlugin implements Listener {
     public float seekerCageRotationYaw = 0;
     public static Main instance;
     Board board = Board.instance;
+
 
     public ArrayList<Player> getSeekers() {
         return Seekers;
@@ -86,9 +89,10 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        getLogger().info("Hello aaaaaaaaaaaaaaaaaaaaa From Hide and Seek V1");
+        getLogger().info("Hello From Hide and Seek V1");
         loadCommands();
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getScheduler().runTaskTimer(this, board, 0, 200);
     }
 
     @Override
@@ -97,7 +101,6 @@ public final class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-
         event.joinMessage(Component.text("Welcome to the server : " + event.getPlayer().getName()));
 
         // Game instruction
