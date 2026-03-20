@@ -11,34 +11,39 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 public class Hider extends Roles{
 
+    boolean isDead = false;
     GameTimer lastMovedSince = GameTimer.fromSeconds(Main.instance,3);
     Location LastPosedBlockPos;
+
+    ArmorStand armorStandFollower;
+    FallingBlock fallingBlockFollower;
 
     public Hider(Player p){
         super(p);
 
-        lastMovedSince.
-        onTick(() -> {
-            p.setExp(1 - lastMovedSince.getPercentageLeft());
+        lastMovedSince
+        .onStart(() ->{
+            p.setExp(0);
+        })
+        .onTick(() -> {
+            if(1 - lastMovedSince.getPercentageLeft() > .05f)
+                p.setExp(1 - lastMovedSince.getPercentageLeft());
         })
 
         .onEnd(() -> {
             p.setExp(1);
-            var blockData = p.getWorld().getBlockData(p.getLocation());
             p.getWorld().setBlockData(p.getLocation(), Material.STONE.createBlockData());
             LastPosedBlockPos = p.getLocation();
 
             Main.instance.getLogger().info(LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
             p.setGameMode(GameMode.SPECTATOR);
             Main.instance.getLogger().info("LE 2 "  + LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
-
-
-            //REGISTER TO MAIN
 
             var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
             Main.instance.hider_PosedBlock.put(v,this);
@@ -50,26 +55,27 @@ public class Hider extends Roles{
 
         player.setMaxHealth(4);
 
-        ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-        stand.setInvisible(true);
-        stand.setGravity(false);
-        stand.setMarker(true);
-        stand.addScoreboardTag("nointeract");
+        armorStandFollower = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
+        armorStandFollower.setInvisible(true);
+        armorStandFollower.setGravity(false);
+        armorStandFollower.setMarker(true);
+        armorStandFollower.addScoreboardTag("nointeract");
 
-        @SuppressWarnings("deprecation")
-        FallingBlock block = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
-        block.setDropItem(false);
-        block.setNoPhysics(true);
-        block.shouldAutoExpire(false);
+        fallingBlockFollower = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
+        fallingBlockFollower.setDropItem(false);
+        fallingBlockFollower.setNoPhysics(true);
+        fallingBlockFollower.shouldAutoExpire(false);
 
-        stand.addPassenger(block);
+        Main.instance.hider_FallingBlock.put(fallingBlockFollower,this);
+
+        armorStandFollower.addPassenger(fallingBlockFollower);
 
         var task = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
 
             if (!player.isOnline()) return;
 
             Location loc2 = player.getLocation().add(0, 0.05, 0);
-            stand.teleport(loc2);
+            armorStandFollower.teleport(loc2);
 
         }, 1, 0L);
     }
@@ -84,6 +90,7 @@ public class Hider extends Roles{
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
         if(event.getPlayer() != player) return;
+        if(isDead) return;
         if (
             event.getFrom().getBlockX() != event.getTo().getBlockX()
             || event.getFrom().getBlockY() != event.getTo().getBlockY()
@@ -100,5 +107,26 @@ public class Hider extends Roles{
             lastMovedSince.cancel();
             lastMovedSince.start();
         }
+    }
+
+    @EventHandler
+    public void OnDeath(PlayerDeathEvent event){
+        if(event.getPlayer() != player) return;
+
+        isDead = true;
+        player.setGameMode(GameMode.SPECTATOR);
+
+        lastMovedSince.cancel();
+
+        var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+        Main.instance.hider_PosedBlock.remove(v,this);
+        Main.instance.hider_FallingBlock.remove(fallingBlockFollower,this);
+    }
+
+
+    public void damageHider(Player damager)
+    {
+        player.setGameMode(GameMode.ADVENTURE);
+        player.damage(2,damager);
     }
 }

@@ -47,16 +47,18 @@ public final class Main extends JavaPlugin implements Listener {
     public void addSeeker(Player player){
         Hiders.remove(player);
         if(!Seekers.contains(player)){
-            getLogger().info("Player joined the seekers team!" + player.getName());
+            getLogger().info("Player joined thae seekers team!" + player.getName());
             Seekers.add(player);
         }
     }
     //endregion
 
     public HashMap<Vector,Hider> hider_PosedBlock;
+    public HashMap<Entity,Hider> hider_FallingBlock;
 
     public void startGame() throws InterruptedException {
-        hider_PosedBlock = new HashMap<>(3);
+        hider_PosedBlock = new HashMap<>(10);
+        hider_FallingBlock = new HashMap<>(10);
 //        if(Seekers.size() <= 1 || Hiders.size() <= 1){
 //            getLogger().info("Not enough players!");
 //            return;
@@ -73,8 +75,8 @@ public final class Main extends JavaPlugin implements Listener {
         for(Player p : Seekers) {
             p.getInventory().clear();
 
-            p.teleport(seekerCage);
-            p.setRotation(179.9f,0);
+            //p.teleport(seekerCage);
+            //p.setRotation(179.9f,0);
             Seekers s = new Seekers(p);
 
             s.OnGameStart();
@@ -84,7 +86,7 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        getLogger().info("Hello From Hide and Seek V1");
+        getLogger().info("Hello aaaaaaaaaaaaaaaaaaaaa From Hide and Seek V1");
         loadCommands();
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -125,7 +127,7 @@ public final class Main extends JavaPlugin implements Listener {
 
 
     private void loadCommands() {
-        HnS_CommandExec _commandExec = new HnS_CommandExec(this);
+        HnS_CommandExec _commandExec = new HnS_CommandExec();
 
         Objects.requireNonNull(getCommand("squidGame")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("StartGame")).setExecutor(_commandExec);

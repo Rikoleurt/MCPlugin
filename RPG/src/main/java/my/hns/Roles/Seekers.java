@@ -9,8 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -71,13 +69,17 @@ public class Seekers extends Roles  {
 
     @EventHandler
     public void onPlayerAttackFallingBlock(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
-        player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
-
+        if(event.getPlayer() != player) return;
         if (!event.getAttacked().getName().equals("Falling block")) return;
 
+        player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
 
+        var misterX = Main.instance.hider_FallingBlock.get(event.getAttacked());
+        if(misterX == null) {player.sendMessage("no Entity found in HashMap"); return;}
 
+        player.sendMessage("Found "+ misterX.player.getName());
 
+        misterX.damageHider(player);
     }
 
     @EventHandler
@@ -95,10 +97,8 @@ public class Seekers extends Roles  {
 
         if(misterX == null) {player.sendMessage("no block found in HashMap"); return;}
 
-        Main.instance.hider_PosedBlock.remove(v);
         player.sendMessage("Found "+ misterX.player.getName());
-        misterX.player.setGameMode(GameMode.ADVENTURE);
-        misterX.player.damage(2,player);
-    }
 
+        misterX.damageHider(player);
+    }
 }
