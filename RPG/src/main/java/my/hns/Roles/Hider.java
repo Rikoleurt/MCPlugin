@@ -55,6 +55,7 @@ public class Hider extends Roles{
     @Override
     public void OnGameStart() {
 
+        player.setGameMode(GameMode.ADVENTURE);
         player.setMaxHealth(4);
 
         armorStandFollower = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
@@ -132,6 +133,11 @@ public class Hider extends Roles{
     public void damageHider(Player damager)
     {
         player.setGameMode(GameMode.ADVENTURE);
+
+        var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+        Main.instance.hider_PosedBlock.remove(v,this);
+        player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
+
         player.damage(2,damager);
     }
 }

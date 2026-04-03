@@ -27,6 +27,7 @@ public class Seekers extends Roles  {
     @Override
     public void OnGameStart() {
 
+        player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 3));
         var timer = GameTimer.fromSeconds(Main.instance,15);
         timer.onTick(() -> {
@@ -90,12 +91,16 @@ public class Seekers extends Roles  {
         var bloc = event.getClickedBlock();
         if(bloc == null || bloc.getType() == Material.AIR) return;
 
-        var LastPosedBlockPos =bloc.getLocation();
+        var LastPosedBlockPos = bloc.getLocation();
         var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
 
         var misterX = Main.instance.hider_PosedBlock.get(v);
 
-        if(misterX == null) {player.sendMessage("no block found in HashMap"); return;}
+        if(misterX == null)
+        {
+            player.sendMessage("no block found in HashMap");
+            return;
+        }
 
         player.sendMessage("Found "+ misterX.player.getName());
 
