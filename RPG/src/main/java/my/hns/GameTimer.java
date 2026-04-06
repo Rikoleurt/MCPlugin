@@ -52,13 +52,14 @@ public class GameTimer {
 
     public void start() {
         time = 0;
+        isStarted = true;
+        isPaused = false;
 
         onStart.run();
 
         runnable = new BukkitRunnable() {
             @Override
             public void run() {
-
                 if (isPaused) return;
 
                 if (time >= maxTicks) {
@@ -91,12 +92,12 @@ public class GameTimer {
         isPaused = false;
     }
 
-    public  boolean getIsStarted ()
+    public boolean isStarted()
     {
         return isStarted;
     }
 
-    public  boolean getIsPaused ()
+    public boolean isPaused()
     {
         return isPaused;
     }

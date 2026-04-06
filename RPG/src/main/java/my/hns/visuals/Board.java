@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
-import java.awt.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +52,11 @@ public class Board implements Runnable {
         s.getEntries().forEach(s::resetScores);
 
         showMates(player, entries);
+        if(Main.instance.getTimer().isStarted()) showTimer(entries);
+        else {
+            entries.add(" ");
+            entries.add("Game will start soon...");
+        }
         showLines(o, entries);
     }
 
@@ -78,6 +83,16 @@ public class Board implements Runnable {
                 lines.add(ChatColor.AQUA + p.getName());
             }
         }
+    }
+
+    private void showTimer(List<String> lines){
+        int currentSeconds = Main.instance.getCurrentTime() / 20;
+        int maxSeconds = Main.instance.getMaxTime();
+        float third = (float) maxSeconds / 3;
+        lines.add(" ");
+        if(currentSeconds < third) lines.add(ChatColor.DARK_GREEN + "Timer : " + currentSeconds + "/" + maxSeconds + " seconds");
+        if(currentSeconds > third && currentSeconds < 2 * third) lines.add(ChatColor.GOLD + "Timer : " + currentSeconds + "/" + maxSeconds + " seconds");
+        if(currentSeconds > 2 * third) lines.add(ChatColor.DARK_RED + "Timer : " + currentSeconds + "/" + maxSeconds + " seconds");
     }
 
     /**

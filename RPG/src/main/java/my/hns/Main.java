@@ -63,7 +63,9 @@ public final class Main extends JavaPlugin implements Listener {
     //region StartGame
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
-    public ItemStack chosenItem;
+    public int currentTime;
+    public int maxTime = 300;
+    GameTimer timer = GameTimer.fromSeconds(this, maxTime);
 
     public void startGame() throws InterruptedException {
         hider_PosedBlock = new HashMap<>(10);
@@ -94,6 +96,19 @@ public final class Main extends JavaPlugin implements Listener {
 
             s.OnGameStart();
         }
+
+        timer
+                .onStart(() -> {
+                    currentTime = timer.getTime();
+                    getLogger().info("Timer started");
+                })
+                .onTick(() -> {
+                    currentTime = timer.getTime();
+                })
+                .onEnd(() -> {
+                    getLogger().info("Timer ended");
+                });
+        timer.start();
     }
     //endregion
 
@@ -104,7 +119,7 @@ public final class Main extends JavaPlugin implements Listener {
         getLogger().info("Hello From Hide and Seek V1");
         loadCommands();
         getServer().getPluginManager().registerEvents(this, this);
-        getServer().getScheduler().runTaskTimer(this, board, 0, 200);
+        getServer().getScheduler().runTaskTimer(this, board, 0, 20);
         menu = new Menu(this);
         addItems();
     }
@@ -174,6 +189,18 @@ public final class Main extends JavaPlugin implements Listener {
     //region GetSet
     public ItemManager getItemManager() {
         return itemManager;
+    }
+
+    public int getCurrentTime() {
+        return currentTime;
+    }
+
+    public int getMaxTime() {
+        return maxTime;
+    }
+
+    public GameTimer getTimer() {
+        return timer;
     }
     //endregion
 }
