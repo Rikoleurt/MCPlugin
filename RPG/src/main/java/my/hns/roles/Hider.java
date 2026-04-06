@@ -1,4 +1,4 @@
-package my.hns.Roles;
+package my.hns.roles;
 
 import my.hns.GameTimer;
 import my.hns.Main;

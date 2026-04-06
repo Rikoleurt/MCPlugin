@@ -30,6 +30,7 @@ public class Menu implements Listener, CommandExecutor {
     private final Component invName = Component.text("Team selector");
     private final Inventory inv = Bukkit.createInventory(null, 27, invName);
     private final Board board = Board.instance;
+
     public Menu(Main plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }

@@ -1,12 +1,11 @@
 package my.hns;
 
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
-import my.hns.Roles.Hider;
-import my.hns.Roles.Seekers;
+import my.hns.roles.Hider;
+import my.hns.roles.Seekers;
 import my.hns.commands.Menu;
 import my.hns.visuals.Board;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -16,46 +15,43 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
 
-
-    //region PlayerList
-    private ArrayList<Player> Seekers = new ArrayList<Player>(5);
-    private ArrayList<Player> Hiders = new ArrayList<Player>(5);
-    public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
-    public float seekerCageRotationYaw = 0;
     public static Main instance;
     Board board = Board.instance;
 
-
+    //region PlayerList
+    private final ArrayList<Player> seekers = new ArrayList<Player>(5);
+    private final ArrayList<Player> hiders = new ArrayList<Player>(5);
+    public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
+    public float seekerCageRotationYaw = 0;
     public ArrayList<Player> getSeekers() {
-        return Seekers;
+        return seekers;
     }
     public ArrayList<Player> getHiders() {
-        return Hiders;
+        return hiders;
     }
 
     public void addHider(Player player){
-        Seekers.remove(player);
-        if(!Hiders.contains(player)) Hiders.add(player);
+        seekers.remove(player);
+        if(!hiders.contains(player)) hiders.add(player);
     }
 
     public void addSeeker(Player player){
-        Hiders.remove(player);
-        if(!Seekers.contains(player)){
+        hiders.remove(player);
+        if(!seekers.contains(player)){
             getLogger().info("Player joined thae seekers team!" + player.getName());
-            Seekers.add(player);
+            seekers.add(player);
         }
     }
     //endregion
 
+    //region StartGame
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
 
@@ -67,7 +63,7 @@ public final class Main extends JavaPlugin implements Listener {
 //            return;
 //        }
 
-        for(Player p : Hiders){
+        for(Player p : hiders){
             p.getInventory().clear();
 
             p.teleport(new Location(p.getWorld(),0,100,0));
@@ -75,7 +71,7 @@ public final class Main extends JavaPlugin implements Listener {
             h.OnGameStart();
         }
 
-        for(Player p : Seekers) {
+        for(Player p : seekers) {
             p.getInventory().clear();
 
             //p.teleport(seekerCage);
@@ -85,7 +81,9 @@ public final class Main extends JavaPlugin implements Listener {
             s.OnGameStart();
         }
     }
+    //endregion
 
+    //region JavaPlugin
     @Override
     public void onEnable() {
         instance = this;
@@ -98,7 +96,9 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
     }
+    //endregion
 
+    //region Events
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.joinMessage(Component.text("Welcome to the server : " + event.getPlayer().getName()));
@@ -127,8 +127,9 @@ public final class Main extends JavaPlugin implements Listener {
     public void onPlayerTakeItem(PlayerInventorySlotChangeEvent event){
         getLogger().info("Player took item: " + event.getPlayer().getName());
     }
+    //endregion
 
-
+    //region Helpers
     private void loadCommands() {
         HnS_CommandExec _commandExec = new HnS_CommandExec();
 
@@ -140,25 +141,7 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("menu")).setExecutor(new Menu(this));
 
     }
-
-    private ItemStack metaData(ItemStack i, String name, String ... lore) {
-        ItemMeta meta = i.getItemMeta();
-        if(i.getType().equals(Material.SOUL_LANTERN)){
-            meta.displayName(Component.text(name, TextColor.color(0x2CE4FF)));
-            List<Component> lores = new ArrayList<>();
-            Collections.addAll(lores, Component.text("Join the seekers!", TextColor.color(0x2CE4FF)));
-            meta.lore(lores);
-        }
-        if(i.getType().equals(Material.FLOWER_POT)){
-            meta.displayName(Component.text(name, TextColor.color(0xFF964A)));
-            List<Component> lores = new ArrayList<>();
-            Collections.addAll(lores, Component.text("Join the hiders!", TextColor.color(0xFF964A)));
-            meta.lore(lores);
-        }
-        i.setItemMeta(meta);
-
-        return i;
-    }
+    //endregion
 }
 
 

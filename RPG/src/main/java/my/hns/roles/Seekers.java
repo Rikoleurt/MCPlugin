@@ -1,4 +1,4 @@
-package my.hns.Roles;
+package my.hns.roles;
 
 import my.hns.GameTimer;
 import my.hns.Main;
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.time.Duration;
 
-public class Seekers extends Roles  {
+public class Seekers extends Roles {
 
     public Seekers(Player p){
         super(p);

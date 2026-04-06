@@ -2,13 +2,11 @@ package my.hns.visuals;
 
 import my.hns.Main;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +16,12 @@ public class Board implements Runnable {
     public final static Board instance = new Board();
     private final static Main main = Main.instance;
 
-    private Board() {
-    }
+    private Board() {}
 
     @Override
     public void run() {
-        Main.instance.getLogger().info("Updating scoreboards");
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) {
-                Main.instance.getLogger().info("Updating scoreboard for " + player.getName());
                 updateScoreboard(player);
             } else {
                 newScoreboard(player);
