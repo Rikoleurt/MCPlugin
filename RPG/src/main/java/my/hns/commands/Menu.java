@@ -1,6 +1,7 @@
 package my.hns.commands;
 
 import my.hns.Main;
+import my.hns.manager.ItemManager;
 import my.hns.visuals.Board;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -34,6 +35,7 @@ public class Menu implements Listener, CommandExecutor {
 
     private final Board board = Board.instance;
     private final Logger logger = Main.instance.getLogger();
+    private final ItemManager itemManager = Main.instance.getItemManager();
 
     private int index = 0;
 
@@ -98,8 +100,25 @@ public class Menu implements Listener, CommandExecutor {
             Collections.addAll(lores, Component.text("Join the hiders!", TextColor.color(0xFF964A)));
             meta.lore(lores);
         }
+        if(i.getType().equals(Material.PLAYER_HEAD)){
+            meta.displayName(Component.text(name, TextColor.color(0x75DE42)));
+            List<Component> lores = new ArrayList<>();
+            Collections.addAll(lores, Component.text("Change your props!", TextColor.color(0x75DE42)));
+            meta.lore(lores);
+        }
+        if(i.getType().equals(Material.DIAMOND)){
+            meta.displayName(Component.text(name, TextColor.color(0x681AAB)));
+            List<Component> lores = new ArrayList<>();
+            Collections.addAll(lores, Component.text("Change your team!", TextColor.color(0x681AAB)));
+            meta.lore(lores);
+        }
+        if(itemManager.getItems().contains(i)){
+            meta.displayName(Component.text(name, TextColor.color(0xDE8304)));
+            List<Component> lores = new ArrayList<>();
+            Collections.addAll(lores, Component.text("Current prop, can be changed before game launching", TextColor.color(0xDE8304)));
+            meta.lore(lores);
+        }
         i.setItemMeta(meta);
-
         return i;
     }
 
@@ -117,7 +136,7 @@ public class Menu implements Listener, CommandExecutor {
                 player.showTitle(title);
                 board.updateScoreboard(player);
 
-                player.getInventory().setItem(0, ItemStack.of(Material.DIAMOND));
+                player.getInventory().setItem(0, getItem(ItemStack.of(Material.DIAMOND), "Change team"));
             }
 
             if (slot == 14) {
@@ -129,8 +148,8 @@ public class Menu implements Listener, CommandExecutor {
                 player.showTitle(title);
                 board.updateScoreboard(player);
 
-                player.getInventory().setItem(0, ItemStack.of(Material.DIAMOND));
-                player.getInventory().setItem(1, ItemStack.of(Material.PLAYER_HEAD));
+                player.getInventory().setItem(0, getItem(ItemStack.of(Material.DIAMOND), "Change team"));
+                player.getInventory().setItem(1, getItem(ItemStack.of(Material.PLAYER_HEAD), "Change prop"));
             }
             // Blague à faire plus tard
             if (slot == 27) {
@@ -147,10 +166,8 @@ public class Menu implements Listener, CommandExecutor {
             if (slot < 0 || slot >= chosePropInv.getSize()) return;
 
             ItemStack chosenItem = chosePropInv.getItem(slot);
-            Main.instance.getLogger().info("Chosen Item " + chosenItem);
-
             if (chosenItem != null && chosenItem.getType() != Material.AIR) {
-                player.getInventory().setItem(2, chosenItem.clone());
+                player.getInventory().setItem(2, getItem(chosenItem.clone(), "Current prop"));
                 player.closeInventory();
             }
 

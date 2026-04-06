@@ -80,10 +80,7 @@ public final class Main extends JavaPlugin implements Listener {
                 getLogger().warning(p.getName() + " has no item in slot 1.");
                 continue;
             }
-
-            getLogger().info("Chosen Item: " + chosenItem);
             Material material = chosenItem.getType();
-            getLogger().info("Material : " + material);
             Hider h = new Hider(p, material);
             h.OnGameStart(material);
         }
