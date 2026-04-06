@@ -16,7 +16,7 @@ public class HnS_CommandExec implements CommandExecutor {
             switch (command.getName().toLowerCase()){
                 case "squidgame" :
                 {
-                    player.sendMessage(player.name() + " = SquidGame!");
+                    player.sendMessage(player.name() + " = SquidGame! + Squidos");
                     return true;
                 }
 
@@ -37,14 +37,9 @@ public class HnS_CommandExec implements CommandExecutor {
                         return  false;
                     }
 
-                    if (team.equals("hider")) {
-                        Main.instance.addHider(player);
-                    }
-                    if (team.equals("seeker")) {
-                        Main.instance.addSeeker(player);
-                    }
+                    if (team.equals("hider")) Main.instance.addHider(player);
+                    if (team.equals("seeker")) Main.instance.addSeeker(player);
                     player.sendMessage("joined Team: " + team);
-
                     return true;
                 }
 
@@ -70,10 +65,7 @@ public class HnS_CommandExec implements CommandExecutor {
                     return true;
                 }
             }
-
-
         }
-
         return false;
     }
 }

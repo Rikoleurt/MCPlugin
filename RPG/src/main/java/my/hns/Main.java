@@ -87,6 +87,7 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        saveDefaultConfig();
         getLogger().info("Hello From Hide and Seek V1");
         loadCommands();
         getServer().getPluginManager().registerEvents(this, this);
@@ -99,6 +100,15 @@ public final class Main extends JavaPlugin implements Listener {
     //endregion
 
     //region Events
+
+    ItemStack[] items = {
+            new ItemStack(Material.ACACIA_BOAT),
+            new ItemStack(Material.ACACIA_DOOR),
+            new ItemStack(Material.ACACIA_FENCE),
+            new ItemStack(Material.ACACIA_LEAVES),
+            new ItemStack(Material.ACACIA_PLANKS),
+    };
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.joinMessage(Component.text("Welcome to the server : " + event.getPlayer().getName()));
@@ -117,15 +127,13 @@ public final class Main extends JavaPlugin implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND)) {
-                getLogger().info("Player interacted with: " + Material.DIAMOND);
-                new Menu(this).openMenuInventory(event.getPlayer());
+                new Menu(this).openChoseTeamInv(event.getPlayer());
+            }
+
+            if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.PLAYER_HEAD)) {
+                new Menu(this).openChosePropInv(event.getPlayer(), items);
             }
         }
-    }
-
-    @EventHandler
-    public void onPlayerTakeItem(PlayerInventorySlotChangeEvent event){
-        getLogger().info("Player took item: " + event.getPlayer().getName());
     }
     //endregion
 
@@ -139,7 +147,6 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("teamlist")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("menu")).setExecutor(new Menu(this));
-
     }
     //endregion
 }

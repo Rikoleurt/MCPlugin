@@ -17,19 +17,24 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Menu implements Listener, CommandExecutor {
 
-    private final Component invName = Component.text("Team selector");
-    private final Inventory inv = Bukkit.createInventory(null, 27, invName);
+    private final Component teamSelectorComp = Component.text("Team selector");
+    private final Component propSelectorComp = Component.text("Prop selector");
+
+    private final Inventory choseTeamInv = Bukkit.createInventory(null, 27, teamSelectorComp);
+    private final Inventory chosePropInv = Bukkit.createInventory(null, 27, propSelectorComp);
+
     private final Board board = Board.instance;
+    private final Logger logger = Main.instance.getLogger();
+
 
     public Menu(Main plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -38,34 +43,58 @@ public class Menu implements Listener, CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender instanceof Player)) {
-
             sender.sendMessage("You must be a player to use this command!");
             return true;
         }
-
         return false;
     }
 
-    public void openMenuInventory(Player player){
+    public void openChoseTeamInv(Player player){
         ItemStack soul_lantern = new ItemStack(Material.SOUL_LANTERN);
         ItemStack pot = new ItemStack(Material.FLOWER_POT);
 
-        inv.setItem(12, getItem(soul_lantern, "Seekers"));
-        inv.setItem(14, getItem(pot, "Hiders"));
-        player.openInventory(inv);
+        choseTeamInv.setItem(12, getItem(soul_lantern, "Seekers"));
+        choseTeamInv.setItem(14, getItem(pot, "Hiders"));
+        player.openInventory(choseTeamInv);
+    }
+
+    /**
+     * Allows the player to open the inventory for choosing its prop for the new game
+     * @param player current Player
+     * @param items Item stack to define (variable size between 4 and 5 items)
+     */
+    public void openChosePropInv(Player player, ItemStack[] items){
+        int index = 0;
+        int size = items.length;
+
+        index = switch (size) {
+            case 4 -> 8;
+            case 5 -> 7;
+            default -> index;
+        };
+
+        if(size <= 5) {
+            for (ItemStack item : items) {
+                index += 2;
+                chosePropInv.setItem(index, item);
+            }
+            player.openInventory(chosePropInv);
+        } else {
+            logger.info("Please reduce the number of items " + items.length);
+        }
     }
 
     private ItemStack getItem(ItemStack i, String name, String ... lore){
         ItemMeta meta = i.getItemMeta();
         if(i.getType().equals(Material.SOUL_LANTERN)){
-            meta.displayName(net.kyori.adventure.text.Component.text(name, TextColor.color(0x2CE4FF)));
-            List<net.kyori.adventure.text.Component> lores = new ArrayList<>();
-            Collections.addAll(lores, net.kyori.adventure.text.Component.text("Join the seekers!", TextColor.color(0x2CE4FF)));
+            meta.displayName(Component.text(name, TextColor.color(0x2CE4FF)));
+            List<Component> lores = new ArrayList<>();
+            Collections.addAll(lores, Component.text("Join the seekers!", TextColor.color(0x2CE4FF)));
             meta.lore(lores);
         }
         if(i.getType().equals(Material.FLOWER_POT)){
-            meta.displayName(net.kyori.adventure.text.Component.text(name, TextColor.color(0xFF964A)));
-            List<net.kyori.adventure.text.Component> lores = new ArrayList<>();
+            meta.displayName(Component.text(name, TextColor.color(0xFF964A)));
+            List<Component> lores = new ArrayList<>();
             Collections.addAll(lores, Component.text("Join the hiders!", TextColor.color(0xFF964A)));
             meta.lore(lores);
         }
@@ -76,30 +105,37 @@ public class Menu implements Listener, CommandExecutor {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
-        if(!event.getView().title().equals(invName)) return;
-        Player player = (Player) event.getWhoClicked();
-        int slot = event.getSlot();
-        Main.instance.getLogger().info(player.getName() + " clicked slot: " + slot);
-        final Title.Times times = Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100));
+        if(event.getView().title().equals(teamSelectorComp)) {
+            Player player = (Player) event.getWhoClicked();
+            int slot = event.getSlot();
+            if (slot == 12) {
+                player.getInventory().clear();
 
-        if(slot == 12){
-            Main.instance.addSeeker(player);
-            Title title = Title.title(Component.text("You joined the seekers!", TextColor.color(0x2CE4FF)), Component.text("Have fun!"));
-            inv.close();
-            player.showTitle(title);
-            board.updateScoreboard(player);
-        }
-        if(slot == 14){
-            Main.instance.addHider(player);
-            Title title = Title.title(Component.text("You joined the hiders!", TextColor.color(0xFF964A)), Component.text("Have fun!"));
-            inv.close();
-            player.showTitle(title);
-            board.updateScoreboard(player);
+                Main.instance.addSeeker(player);
+                Title title = Title.title(Component.text("You joined the seekers!", TextColor.color(0x2CE4FF)), Component.text("Have fun!"));
+                choseTeamInv.close();
+                player.showTitle(title);
+                board.updateScoreboard(player);
 
-        }
-        // Blague à faire plus tard
-        if(slot == 27){
-            player.kick();
+                player.getInventory().setItem(0, ItemStack.of(Material.DIAMOND));
+            }
+
+            if (slot == 14) {
+                player.getInventory().clear();
+
+                Main.instance.addHider(player);
+                Title title = Title.title(Component.text("You joined the hiders!", TextColor.color(0xFF964A)), Component.text("Chose a prop and have fun!"));
+                choseTeamInv.close();
+                player.showTitle(title);
+                board.updateScoreboard(player);
+
+                player.getInventory().setItem(0, ItemStack.of(Material.DIAMOND));
+                player.getInventory().setItem(1, ItemStack.of(Material.PLAYER_HEAD));
+            }
+            // Blague à faire plus tard
+            if (slot == 27) {
+                player.kick();
+            }
         }
         event.setCancelled(true);
     }

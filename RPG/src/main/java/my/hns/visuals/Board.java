@@ -14,8 +14,6 @@ import java.util.List;
 public class Board implements Runnable {
 
     public final static Board instance = new Board();
-    private final static Main main = Main.instance;
-
     private Board() {}
 
     @Override
@@ -47,16 +45,10 @@ public class Board implements Runnable {
     }
 
     public void updateScoreboard(Player player) {
-        Main.instance.getLogger().info("Updating scoreboard for " + player.getName());
-
         Scoreboard s = player.getScoreboard();
         Objective o = s.getObjective(DisplaySlot.SIDEBAR);
 
-        ArrayList<Player> hiders = Main.instance.getHiders();
-
-        boolean isHider = hiders.contains(player);
         List<String> entries = new ArrayList<>();
-
         s.getEntries().forEach(s::resetScores);
 
         showMates(player, entries);
