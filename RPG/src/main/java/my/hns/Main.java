@@ -95,8 +95,7 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     @Override
-    public void onDisable() {
-    }
+    public void onDisable() {}
     //endregion
 
     //region Events
@@ -125,12 +124,18 @@ public final class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        Inventory playerInv = event.getPlayer().getInventory();
+        boolean isContained = playerInv.contains(items[0])
+                        || playerInv.contains(items[1])
+                        || playerInv.contains(items[2])
+                        || playerInv.contains(items[3])
+                        || playerInv.contains(items[4]);
+
         if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND)) {
                 new Menu(this).openChoseTeamInv(event.getPlayer());
             }
-
-            if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.PLAYER_HEAD)) {
+            if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.PLAYER_HEAD) || isContained) {
                 new Menu(this).openChosePropInv(event.getPlayer(), items);
             }
         }

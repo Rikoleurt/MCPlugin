@@ -35,6 +35,7 @@ public class Menu implements Listener, CommandExecutor {
     private final Board board = Board.instance;
     private final Logger logger = Main.instance.getLogger();
 
+    private int index = 0;
 
     public Menu(Main plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -64,7 +65,6 @@ public class Menu implements Listener, CommandExecutor {
      * @param items Item stack to define (variable size between 4 and 5 items)
      */
     public void openChosePropInv(Player player, ItemStack[] items){
-        int index = 0;
         int size = items.length;
 
         index = switch (size) {
@@ -135,6 +135,21 @@ public class Menu implements Listener, CommandExecutor {
             // Blague à faire plus tard
             if (slot == 27) {
                 player.kick();
+            }
+        }
+
+        if (event.getView().title().equals(propSelectorComp)) {
+            if (!(event.getWhoClicked() instanceof Player player)) return;
+            int slot = event.getRawSlot();
+
+            if (slot < 0 || slot >= chosePropInv.getSize()) return;
+
+            ItemStack chosenItem = chosePropInv.getItem(slot);
+            Main.instance.getLogger().info("Chosen Item " + chosenItem);
+
+            if (chosenItem != null && chosenItem.getType() != Material.AIR) {
+                player.getInventory().setItem(1, chosenItem.clone());
+                player.closeInventory();
             }
         }
         event.setCancelled(true);
