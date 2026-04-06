@@ -5,17 +5,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class HnS_CommandExec implements CommandExecutor {
-
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(HnS_CommandExec.class);
-    private final Logger logger = JavaPlugin.getProvidingPlugin(HnS_CommandExec.class).getLogger();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
