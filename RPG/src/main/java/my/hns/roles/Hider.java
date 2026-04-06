@@ -26,8 +26,11 @@ public class Hider extends Roles{
     FallingBlock fallingBlockFollower;
     BukkitTask taskFollower;
 
-    public Hider(Player p){
+    Material material;
+
+    public Hider(Player p, Material material){
         super(p);
+        this.material = material;
 
         lastMovedSince
         .onStart(() ->{
@@ -40,7 +43,7 @@ public class Hider extends Roles{
 
         .onEnd(() -> {
             p.setExp(1);
-            p.getWorld().setBlockData(p.getLocation(), Material.STONE.createBlockData());
+            p.getWorld().setBlockData(p.getLocation(), material.createBlockData());
             LastPosedBlockPos = p.getLocation();
 
             Main.instance.getLogger().info(LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
@@ -54,7 +57,6 @@ public class Hider extends Roles{
     }
     @Override
     public void OnGameStart(Material material) {
-
         player.setGameMode(GameMode.ADVENTURE);
         player.setMaxHealth(4);
 
@@ -84,41 +86,12 @@ public class Hider extends Roles{
     }
 
     @Override
-    public void OnGameStart() {
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setMaxHealth(4);
-
-        armorStandFollower = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-        armorStandFollower.setInvisible(true);
-        armorStandFollower.setGravity(false);
-        armorStandFollower.setMarker(true);
-        armorStandFollower.addScoreboardTag("nointeract");
-
-        fallingBlockFollower = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), Material.STONE.createBlockData());
-        fallingBlockFollower.setDropItem(false);
-        fallingBlockFollower.setNoPhysics(true);
-        fallingBlockFollower.shouldAutoExpire(false);
-
-        Main.instance.hider_FallingBlock.put(fallingBlockFollower,this);
-
-        armorStandFollower.addPassenger(fallingBlockFollower);
-
-        taskFollower = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
-
-            if (!player.isOnline()) return;
-
-            Location loc2 = player.getLocation().add(0, 0.05, 0);
-            armorStandFollower.teleport(loc2);
-
-        }, 1, 0L);
-    }
+    public void OnGameStart() {}
 
     @Override
     public void RegisterEvents() {
         Bukkit.getServer().getPluginManager().registerEvents(this,Main.instance);
     }
-
-
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
@@ -160,8 +133,7 @@ public class Hider extends Roles{
     }
 
 
-    public void damageHider(Player damager)
-    {
+    public void damageHider(Player damager) {
         player.setGameMode(GameMode.ADVENTURE);
 
         var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());

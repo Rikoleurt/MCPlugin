@@ -73,8 +73,10 @@ public final class Main extends JavaPlugin implements Listener {
             }
 
             getLogger().info("Chosen Item: " + chosenItem);
-            Hider h = new Hider(p);
-            h.OnGameStart(chosenItem.getType());
+            Material material = chosenItem.getType();
+            getLogger().info("Material : " + material);
+            Hider h = new Hider(p, material);
+            h.OnGameStart(material);
         }
 
         for(Player p : seekers) {
