@@ -25,6 +25,9 @@ public class Seekers extends Roles {
     }
 
     @Override
+    public void OnGameStart(Material material) {}
+
+    @Override
     public void OnGameStart() {
 
         player.setGameMode(GameMode.ADVENTURE);

@@ -136,21 +136,26 @@ public class Menu implements Listener, CommandExecutor {
             if (slot == 27) {
                 player.kick();
             }
+            event.setCancelled(true);
+            return;
         }
 
         if (event.getView().title().equals(propSelectorComp)) {
             if (!(event.getWhoClicked() instanceof Player player)) return;
-            int slot = event.getRawSlot();
 
+            int slot = event.getRawSlot();
             if (slot < 0 || slot >= chosePropInv.getSize()) return;
 
             ItemStack chosenItem = chosePropInv.getItem(slot);
             Main.instance.getLogger().info("Chosen Item " + chosenItem);
 
             if (chosenItem != null && chosenItem.getType() != Material.AIR) {
-                player.getInventory().setItem(1, chosenItem.clone());
+                player.getInventory().setItem(2, chosenItem.clone());
                 player.closeInventory();
             }
+
+            event.setCancelled(true);
+            return;
         }
         event.setCancelled(true);
     }

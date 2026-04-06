@@ -53,8 +53,38 @@ public class Hider extends Roles{
 
     }
     @Override
-    public void OnGameStart() {
+    public void OnGameStart(Material material) {
 
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setMaxHealth(4);
+
+        armorStandFollower = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
+        armorStandFollower.setInvisible(true);
+        armorStandFollower.setGravity(false);
+        armorStandFollower.setMarker(true);
+        armorStandFollower.addScoreboardTag("nointeract");
+
+        fallingBlockFollower = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), material.createBlockData());
+        fallingBlockFollower.setDropItem(false);
+        fallingBlockFollower.setNoPhysics(true);
+        fallingBlockFollower.shouldAutoExpire(false);
+
+        Main.instance.hider_FallingBlock.put(fallingBlockFollower,this);
+
+        armorStandFollower.addPassenger(fallingBlockFollower);
+
+        taskFollower = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
+
+            if (!player.isOnline()) return;
+
+            Location loc2 = player.getLocation().add(0, 0.05, 0);
+            armorStandFollower.teleport(loc2);
+
+        }, 1, 0L);
+    }
+
+    @Override
+    public void OnGameStart() {
         player.setGameMode(GameMode.ADVENTURE);
         player.setMaxHealth(4);
 

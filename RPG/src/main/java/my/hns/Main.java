@@ -24,7 +24,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     public static Main instance;
     Board board = Board.instance;
-
+    Menu menu;
     //region PlayerList
     private final ArrayList<Player> seekers = new ArrayList<Player>(5);
     private final ArrayList<Player> hiders = new ArrayList<Player>(5);
@@ -54,6 +54,7 @@ public final class Main extends JavaPlugin implements Listener {
     //region StartGame
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
+    public ItemStack chosenItem;
 
     public void startGame() throws InterruptedException {
         hider_PosedBlock = new HashMap<>(10);
@@ -63,12 +64,17 @@ public final class Main extends JavaPlugin implements Listener {
 //            return;
 //        }
 
-        for(Player p : hiders){
-            p.getInventory().clear();
+        for (Player p : hiders) {
+            ItemStack chosenItem = p.getInventory().getItem(2);
 
-            p.teleport(new Location(p.getWorld(),0,100,0));
+            if (chosenItem == null || chosenItem.getType() == Material.AIR) {
+                getLogger().warning(p.getName() + " has no item in slot 1.");
+                continue;
+            }
+
+            getLogger().info("Chosen Item: " + chosenItem);
             Hider h = new Hider(p);
-            h.OnGameStart();
+            h.OnGameStart(chosenItem.getType());
         }
 
         for(Player p : seekers) {
@@ -87,11 +93,11 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
-        saveDefaultConfig();
         getLogger().info("Hello From Hide and Seek V1");
         loadCommands();
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getScheduler().runTaskTimer(this, board, 0, 200);
+        menu = new Menu(this);
     }
 
     @Override
@@ -124,20 +130,24 @@ public final class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Inventory playerInv = event.getPlayer().getInventory();
-        boolean isContained = playerInv.contains(items[0])
-                        || playerInv.contains(items[1])
-                        || playerInv.contains(items[2])
-                        || playerInv.contains(items[3])
-                        || playerInv.contains(items[4]);
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
 
-        if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.DIAMOND)) {
-                new Menu(this).openChoseTeamInv(event.getPlayer());
-            }
-            if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.PLAYER_HEAD) || isContained) {
-                new Menu(this).openChosePropInv(event.getPlayer(), items);
-            }
+        Player player = event.getPlayer();
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+
+        if (mainHand == null || mainHand.getType() == Material.AIR) return;
+
+        Material type = mainHand.getType();
+
+        if (type == Material.DIAMOND) {
+            menu.openChoseTeamInv(player);
+            return;
+        }
+
+        if (type == Material.PLAYER_HEAD) {
+            menu.openChosePropInv(player, items);
         }
     }
     //endregion
