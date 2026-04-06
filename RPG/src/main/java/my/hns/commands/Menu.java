@@ -64,8 +64,8 @@ public class Menu implements Listener, CommandExecutor {
      * @param player current Player
      * @param items Item stack to define (variable size between 4 and 5 items)
      */
-    public void openChosePropInv(Player player, ItemStack[] items){
-        int size = items.length;
+    public void openPropInv(Player player, List<ItemStack> items){
+        int size = items.size();
 
         index = switch (size) {
             case 4 -> 8;
@@ -80,7 +80,7 @@ public class Menu implements Listener, CommandExecutor {
             }
             player.openInventory(chosePropInv);
         } else {
-            logger.info("Please reduce the number of items " + items.length);
+            logger.info("Please reduce the number of items " + items.size());
         }
     }
 

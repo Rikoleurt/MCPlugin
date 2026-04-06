@@ -23,3 +23,5 @@ commands:
   menu:
     description: Open the menu
     usage: /menu
+  changeblock:
+    description: Modify the set of block before launching a game

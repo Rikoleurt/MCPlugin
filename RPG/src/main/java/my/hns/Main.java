@@ -1,6 +1,6 @@
 package my.hns;
 
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
+import my.hns.manager.ItemManager;
 import my.hns.roles.Hider;
 import my.hns.roles.Seekers;
 import my.hns.commands.Menu;
@@ -25,6 +25,15 @@ public final class Main extends JavaPlugin implements Listener {
     public static Main instance;
     Board board = Board.instance;
     Menu menu;
+    ItemManager itemManager = new ItemManager();
+    ItemStack[] items = {
+            new ItemStack(Material.ACACIA_BOAT),
+            new ItemStack(Material.ACACIA_DOOR),
+            new ItemStack(Material.ACACIA_FENCE),
+            new ItemStack(Material.ACACIA_LEAVES),
+            new ItemStack(Material.ACACIA_PLANKS),
+    };
+
     //region PlayerList
     private final ArrayList<Player> seekers = new ArrayList<Player>(5);
     private final ArrayList<Player> hiders = new ArrayList<Player>(5);
@@ -100,6 +109,7 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getScheduler().runTaskTimer(this, board, 0, 200);
         menu = new Menu(this);
+        addItems();
     }
 
     @Override
@@ -107,14 +117,6 @@ public final class Main extends JavaPlugin implements Listener {
     //endregion
 
     //region Events
-
-    ItemStack[] items = {
-            new ItemStack(Material.ACACIA_BOAT),
-            new ItemStack(Material.ACACIA_DOOR),
-            new ItemStack(Material.ACACIA_FENCE),
-            new ItemStack(Material.ACACIA_LEAVES),
-            new ItemStack(Material.ACACIA_PLANKS),
-    };
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -139,7 +141,7 @@ public final class Main extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         ItemStack mainHand = player.getInventory().getItemInMainHand();
 
-        if (mainHand == null || mainHand.getType() == Material.AIR) return;
+        if (mainHand.getType() == Material.AIR) return;
 
         Material type = mainHand.getType();
 
@@ -149,7 +151,7 @@ public final class Main extends JavaPlugin implements Listener {
         }
 
         if (type == Material.PLAYER_HEAD) {
-            menu.openChosePropInv(player, items);
+            menu.openPropInv(player, itemManager.getItems());
         }
     }
     //endregion
@@ -164,6 +166,17 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("teamlist")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("menu")).setExecutor(new Menu(this));
+        Objects.requireNonNull(getCommand("changeblock")).setExecutor(_commandExec);
+    }
+
+    private void addItems() {
+        itemManager.addAll(items);
+    }
+    //endregion
+
+    //region GetSet
+    public ItemManager getItemManager() {
+        return itemManager;
     }
     //endregion
 }
