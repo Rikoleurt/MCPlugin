@@ -31,9 +31,9 @@ public class Seekers extends Roles {
         player.getInventory().clear();
         player.getInventory().setItem(0, new ItemStack(Material.WOODEN_SWORD));
         player.setGameMode(GameMode.ADVENTURE);
-        player.setHealth(20);
+        player.setMaxHealth(20);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 3));
-        var timer = GameTimer.fromSeconds(Main.instance,15);
+        var timer = GameTimer.fromSeconds(Main.instance,10);
         timer.onTick(() -> {
             player.teleport(seekerCage);
             int TicksLeft = timer.getTickLeft();
@@ -71,9 +71,8 @@ public class Seekers extends Roles {
     @EventHandler
     public void onPlayerAttackFallingBlock(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
         if(event.getPlayer() != player) return;
-        if (!event.getAttacked().getName().equals("Falling block")) return;
 
-        player.sendMessage(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
+        Main.instance.getLogger().info(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
 
         var misterX = Main.instance.hider_FallingBlock.get(event.getAttacked());
         if(misterX == null) {player.sendMessage("no Entity found in HashMap"); return;}

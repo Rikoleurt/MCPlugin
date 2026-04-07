@@ -75,6 +75,7 @@ public class Hider extends Roles {
         fallingBlockFollower.shouldAutoExpire(false);
 
         Main.instance.hider_FallingBlock.put(fallingBlockFollower,this);
+        Main.instance.hider_FallingBlock.put(armorStandFollower,this);
 
         armorStandFollower.addPassenger(fallingBlockFollower);
         haveFollowers = true;
@@ -82,6 +83,8 @@ public class Hider extends Roles {
     void removeFollowers(){
 
         Main.instance.hider_FallingBlock.remove(fallingBlockFollower);
+        Main.instance.hider_FallingBlock.remove(armorStandFollower,this);
+
         fallingBlockFollower.remove();
         armorStandFollower.remove();
         armorStandFollower = null;
@@ -93,6 +96,7 @@ public class Hider extends Roles {
     public void OnGameStart(Material material) {
         player.setGameMode(GameMode.ADVENTURE);
         player.setMaxHealth(4);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 75, 5));
 
         createFollowers();
 
@@ -168,7 +172,6 @@ public class Hider extends Roles {
         if(LastPosedBlockPos != null){
             v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
             Main.instance.hider_PosedBlock.remove(v,this);
-            Main.instance.hider_FallingBlock.remove(fallingBlockFollower,this);
         }
 
         Main.instance.getLogger().info(Main.instance.nbHider + "  : " );
@@ -183,9 +186,11 @@ public class Hider extends Roles {
     public void damageHider(Player damager) {
         player.setGameMode(GameMode.ADVENTURE);
 
-        var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-        Main.instance.hider_PosedBlock.remove(v,this);
-        player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
+        if(LastPosedBlockPos != null){
+            var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+            Main.instance.hider_PosedBlock.remove(v,this);
+            player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
+        }
 
         player.damage(2,damager);
     }

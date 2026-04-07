@@ -132,7 +132,7 @@ public class Menu implements Listener, CommandExecutor {
 
                 Main.instance.addSeeker(player);
                 Title title = Title.title(Component.text("You joined the seekers!", TextColor.color(0x2CE4FF)), Component.text("Have fun!"));
-                choseTeamInv.close();
+                player.closeInventory(); //choseTeamInv.close();
                 player.showTitle(title);
                 board.updateScoreboard(player);
 

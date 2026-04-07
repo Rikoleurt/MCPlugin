@@ -67,14 +67,14 @@ public final class Main extends JavaPlugin implements Listener {
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
     public int currentTime;
-    public int maxTime = 45;
+    public int maxTime = 75;
     GameTimer timer = GameTimer.fromSeconds(this, maxTime);
     public int nbHider = -1;
 
     public boolean hasGameStarted = false;
     public void startGame() throws InterruptedException {
-        hider_PosedBlock = new HashMap<>(10);
-        hider_FallingBlock = new HashMap<>(10);
+        hider_PosedBlock = new HashMap<>();
+        hider_FallingBlock = new HashMap<>();
 //        if(Seekers.size() <= 1 || Hiders.size() <= 1){
 //            getLogger().info("Not enough players!");
 //            return;
