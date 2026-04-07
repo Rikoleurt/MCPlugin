@@ -82,7 +82,6 @@ public final class Main extends JavaPlugin implements Listener {
 
         for (Player p : hiders) {
             ItemStack chosenItem = p.getInventory().getItem(2);
-
             if (chosenItem == null || chosenItem.getType() == Material.AIR) {
                 p.sendMessage(ChatColor.RED + "[ALERT] Someone didn't choose an item. Please choose an item.");
                 return;
@@ -135,7 +134,6 @@ public final class Main extends JavaPlugin implements Listener {
 
         // Game instruction
         Player player = event.getPlayer();
-        player.sendMessage(Component.text(" ** Welcome to the game! Please join a team by right clicking the diamond in your inventory. **"));
 
         // Lobby set up
         Inventory playerInv = player.getInventory();
@@ -178,6 +176,7 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(_commandExec);
         Objects.requireNonNull(getCommand("menu")).setExecutor(new Menu(this));
         Objects.requireNonNull(getCommand("changeblock")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("sound")).setExecutor(_commandExec);
     }
 
     private void launchGameTimer(){
@@ -187,8 +186,8 @@ public final class Main extends JavaPlugin implements Listener {
                     getLogger().info("Timer started");
                     Title title = Title.title(
                             Component.text("Game started"),
-                            Component.text(""),
-                            Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100)));
+                            Component.text("GL HF"),
+                            Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(2000), Duration.ofMillis(100)));
 
                     for(Player p : Bukkit.getOnlinePlayers()) {
                         p.showTitle(title);
@@ -198,7 +197,7 @@ public final class Main extends JavaPlugin implements Listener {
                     currentTime = timer.getTickLeft();
                     int currentSeconds = currentTime / 20;
                     if(currentTime % 20 == 0) {
-                        int half = (timer.getMaxTime()/20 - 15) / 2;
+                        int half = (timer.getMaxTime() / 20 - 15) / 2;
                         boolean is5secondLeft = currentTime / 20 <= 5;
                         Title halfTitle = Title.title(
                                 Component.text(currentSeconds + " seconds left", NamedTextColor.WHITE),
@@ -232,12 +231,12 @@ public final class Main extends JavaPlugin implements Listener {
         Title winTitle = Title.title(
                 Component.text("You win this round!", NamedTextColor.DARK_GREEN),
                 Component.text(""),
-                Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100)));
+                Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(3000), Duration.ofMillis(100)));
 
         Title lostTitle = Title.title(
                 Component.text("You lost this round! (T'es nul fdp)", NamedTextColor.DARK_RED),
                 Component.text(""),
-                Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100)));
+                Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(3000), Duration.ofMillis(100)));
 
         if(!haveHidersLost()) {
             getLogger().info("Hiders win the round!");

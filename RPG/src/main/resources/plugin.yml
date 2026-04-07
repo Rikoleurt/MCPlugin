@@ -25,3 +25,5 @@ commands:
     usage: /menu
   changeblock:
     description: Modify the set of block before launching a game
+  sound:
+    description: play a sound
