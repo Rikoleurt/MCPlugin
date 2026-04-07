@@ -22,6 +22,7 @@ public class Hider extends Roles {
     GameTimer lastMovedSince = GameTimer.fromSeconds(Main.instance,3);
     Location LastPosedBlockPos;
 
+    boolean haveFollowers = false;
     ArmorStand armorStandFollower;
     FallingBlock fallingBlockFollower;
     BukkitTask taskFollower;
@@ -53,16 +54,12 @@ public class Hider extends Roles {
             var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
             Main.instance.hider_PosedBlock.put(v,this);
 
-            fallingBlockFollower.remove();
-            armorStandFollower.remove();
+            removeFollowers();
         });
 
     }
-    @Override
-    public void OnGameStart(Material material) {
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setMaxHealth(4);
 
+    void createFollowers(){
         armorStandFollower = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
         armorStandFollower.setInvisible(true);
         armorStandFollower.setGravity(false);
@@ -78,10 +75,28 @@ public class Hider extends Roles {
         Main.instance.hider_FallingBlock.put(fallingBlockFollower,this);
 
         armorStandFollower.addPassenger(fallingBlockFollower);
+        haveFollowers = true;
+    }
+    void removeFollowers(){
+
+        Main.instance.hider_FallingBlock.remove(fallingBlockFollower);
+        fallingBlockFollower.remove();
+        armorStandFollower.remove();
+        armorStandFollower = null;
+        fallingBlockFollower = null;
+
+        haveFollowers = false;
+    }
+    @Override
+    public void OnGameStart(Material material) {
+        player.setGameMode(GameMode.ADVENTURE);
+        player.setMaxHealth(4);
+
+        createFollowers();
 
         taskFollower = Bukkit.getScheduler().runTaskTimer(Main.instance, () -> {
-
             if (!player.isOnline()) return;
+            if (!haveFollowers) return;
 
             Location loc2 = player.getLocation().add(0, 0.05, 0);
             armorStandFollower.teleport(loc2);
@@ -100,6 +115,7 @@ public class Hider extends Roles {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
         if(event.getPlayer() != player) return;
+        if(!Main.instance.hasGameStarted) return;
         if(isDead) return;
 
         if(player.isInWater()) {
@@ -118,6 +134,8 @@ public class Hider extends Roles {
 
                 var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
                 Main.instance.hider_PosedBlock.remove(v);
+
+                createFollowers();
             }
 
             lastMovedSince.cancel();
@@ -129,12 +147,13 @@ public class Hider extends Roles {
     public void OnDeath(PlayerDeathEvent event){
         if(event.getPlayer() != player) return;
 
+        Main.instance.hasGameStarted = false;
+
         isDead = true;
+        removeFollowers();
         player.setGameMode(GameMode.SPECTATOR);
 
         taskFollower.cancel();
-        fallingBlockFollower.remove();
-        armorStandFollower.remove();
         lastMovedSince.cancel();
         Vector v;
 

@@ -71,6 +71,7 @@ public final class Main extends JavaPlugin implements Listener {
     GameTimer timer = GameTimer.fromSeconds(this, maxTime);
     public int nbHider = -1;
 
+    public boolean hasGameStarted = false;
     public void startGame() throws InterruptedException {
         hider_PosedBlock = new HashMap<>(10);
         hider_FallingBlock = new HashMap<>(10);
@@ -106,6 +107,7 @@ public final class Main extends JavaPlugin implements Listener {
         }
 
         launchGameTimer();
+        hasGameStarted = true;
     }
 
     //endregion
