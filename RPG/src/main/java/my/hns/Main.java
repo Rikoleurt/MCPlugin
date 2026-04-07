@@ -6,6 +6,8 @@ import my.hns.roles.Seekers;
 import my.hns.commands.Menu;
 import my.hns.visuals.Board;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
+import java.time.Duration;
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -64,7 +67,7 @@ public final class Main extends JavaPlugin implements Listener {
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
     public int currentTime;
-    public int maxTime = 300;
+    public int maxTime = 45;
     GameTimer timer = GameTimer.fromSeconds(this, maxTime);
 
     public void startGame() throws InterruptedException {
@@ -75,13 +78,15 @@ public final class Main extends JavaPlugin implements Listener {
 //            return;
 //        }
 
+
         for (Player p : hiders) {
             ItemStack chosenItem = p.getInventory().getItem(2);
 
             if (chosenItem == null || chosenItem.getType() == Material.AIR) {
-                getLogger().warning(p.getName() + " has no item in slot 1.");
-                continue;
+                p.sendMessage(ChatColor.RED + "[ALERT] Someone didn't choose an item. Please choose an item.");
+                return;
             }
+
             Material material = chosenItem.getType();
             Hider h = new Hider(p, material);
             h.OnGameStart(material);
@@ -97,19 +102,9 @@ public final class Main extends JavaPlugin implements Listener {
             s.OnGameStart();
         }
 
-        timer
-                .onStart(() -> {
-                    currentTime = timer.getTime();
-                    getLogger().info("Timer started");
-                })
-                .onTick(() -> {
-                    currentTime = timer.getTime();
-                })
-                .onEnd(() -> {
-                    getLogger().info("Timer ended");
-                });
-        timer.start();
+        launchGameTimer();
     }
+
     //endregion
 
     //region JavaPlugin
@@ -181,6 +176,57 @@ public final class Main extends JavaPlugin implements Listener {
         Objects.requireNonNull(getCommand("changeblock")).setExecutor(_commandExec);
     }
 
+    private void launchGameTimer(){
+        timer
+                .onStart(() -> {
+                    currentTime = timer.getTime();
+                    getLogger().info("Timer started");
+                    Title title = Title.title(
+                            Component.text("Game started"),
+                            Component.text(""),
+                            Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100)));
+
+                    for(Player p : Bukkit.getOnlinePlayers()) {
+                        p.showTitle(title);
+                    }
+                })
+                .onTick(() -> {
+                    currentTime = timer.getTickLeft();
+                    int currentSeconds = currentTime / 20;
+                    if(currentTime % 20 == 0) {
+                        int half = (timer.getMaxTime()/20 - 15) / 2;
+                        boolean is5secondLeft = currentTime / 20 <= 5;
+                        Title halfTitle = Title.title(
+                                Component.text(currentSeconds + " seconds left", NamedTextColor.WHITE),
+                                Component.text(""),
+                                Title.Times.times(Duration.ofMillis(1000), Duration.ofMillis(1000), Duration.ofMillis(100)));
+
+                        Title rest5Title = Title.title(
+                                Component.text(currentTime / 20 + " seconds left", NamedTextColor.GOLD),
+                                Component.text(""),
+                                Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100)));
+                        double half1 = half - 0.5;
+                        double half2 = half + 0.5;
+                        if (currentSeconds >= half1 && currentSeconds <= half2) {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                p.showTitle(halfTitle);
+                            }
+                        }
+                        if (is5secondLeft) {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                p.showTitle(rest5Title);
+                            }
+                        }
+                    }
+                })
+                .onSecond(() -> {
+
+                })
+                .onEnd(() -> {
+                    getLogger().info("Timer ended");
+                });
+        timer.start();
+    }
     private void addItems() {
         itemManager.addAll(items);
     }

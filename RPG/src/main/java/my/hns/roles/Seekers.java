@@ -38,7 +38,7 @@ public class Seekers extends Roles {
             int TicksLeft = timer.getTickLeft();
             if (TicksLeft % 20 == 0) {
                 final Component mainTitle = Component.text(TicksLeft / 20, NamedTextColor.WHITE);
-                final Component subtitle = Component.text("get Ready", NamedTextColor.GRAY);
+                final Component subtitle = Component.text("Get ready", NamedTextColor.GRAY);
                 final Title.Times times = Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(100));
                 final Title title = Title.title(mainTitle, subtitle, times);
                 player.showTitle(title);

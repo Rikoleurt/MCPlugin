@@ -9,6 +9,7 @@ public class GameTimer {
 
     private Runnable onStart = () -> {};
     private Runnable onTick = () -> {};
+    private Runnable onSecond = () -> {};
     private Runnable onEnd = () -> {};
     private Runnable onCancel = () -> {};
 
@@ -30,6 +31,7 @@ public class GameTimer {
     public static GameTimer fromTicks(JavaPlugin plugin, int ticks) {
         return new GameTimer(plugin, ticks);
     }
+
     public GameTimer onStart(Runnable r) {
         this.onStart = r;
         return this;
@@ -42,6 +44,11 @@ public class GameTimer {
 
     public GameTimer onEnd(Runnable r) {
         this.onEnd = r;
+        return this;
+    }
+
+    public GameTimer onSecond(Runnable r) {
+        this.onSecond = r;
         return this;
     }
 

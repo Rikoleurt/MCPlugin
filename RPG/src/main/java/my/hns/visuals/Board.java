@@ -11,6 +11,8 @@ import org.bukkit.scoreboard.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.papermc.paper.scoreboard.numbers.NumberFormat.blank;
+
 public class Board implements Runnable {
 
     public final static Board instance = new Board();
@@ -32,13 +34,13 @@ public class Board implements Runnable {
         Objective o = s.registerNewObjective(Main.instance.getName(), Criteria.DUMMY, Component.text("test"));
 
         o.setDisplaySlot(DisplaySlot.SIDEBAR);
-        o.displayName(Component.text("===== Hide and Seek =====", TextColor.color(0x9D670C)));
-        o.getScore("").setScore(6);
-        o.getScore("").setScore(5);
-        o.getScore("").setScore(4);
-        o.getScore("").setScore(3);
-        o.getScore("").setScore(2);
-        o.getScore("").setScore(1);
+        o.displayName(Component.text("---------- Hide and Seek ----------", TextColor.color(0x2D8A9D)));
+        o.getScore(" ").setScore(6);
+        o.getScore(" ").setScore(5);
+        o.getScore(" ").setScore(4);
+        o.getScore(" ").setScore(3);
+        o.getScore(" ").setScore(2);
+        o.getScore(" ").setScore(1);
 
         player.setScoreboard(s);
 
@@ -51,11 +53,16 @@ public class Board implements Runnable {
         List<String> entries = new ArrayList<>();
         s.getEntries().forEach(s::resetScores);
 
+        entries.add(blank(1));
+
         showMates(player, entries);
-        if(Main.instance.getTimer().isStarted()) showTimer(entries);
-        else {
+        if(Main.instance.getTimer().isStarted()){
+            entries.add(blank(3));
+            entries.add(blank(4));
+            showTimer(entries);
+        } else {
             entries.add(" ");
-            entries.add("Game will start soon...");
+            entries.add(ChatColor.GOLD + "Game will start soon...");
         }
         showLines(o, entries);
     }
@@ -73,26 +80,28 @@ public class Board implements Runnable {
         lines.add(" ");
 
         if (isHider) {
+            lines.add(ChatColor.GOLD + "===== Team - Hider =====");
             for (Player p : hiders) {
-                lines.add(ChatColor.GOLD + "===== Team - Hider =====");
                 lines.add(ChatColor.GOLD + p.getName());
             }
         } else {
+            lines.add(ChatColor.AQUA + "===== Team - Seeker =====");
             for (Player p : seekers) {
-                lines.add(ChatColor.AQUA + "===== Team - Seeker =====");
                 lines.add(ChatColor.AQUA + p.getName());
             }
         }
     }
 
-    private void showTimer(List<String> lines){
+    private void showTimer(List<String> lines) {
         int currentSeconds = Main.instance.getCurrentTime() / 20;
-        int maxSeconds = Main.instance.getMaxTime();
-        float third = (float) maxSeconds / 3;
-        lines.add(" ");
-        if(currentSeconds < third) lines.add(ChatColor.DARK_GREEN + "Timer : " + currentSeconds + "/" + maxSeconds + " seconds");
-        if(currentSeconds > third && currentSeconds < 2 * third) lines.add(ChatColor.GOLD + "Timer : " + currentSeconds + "/" + maxSeconds + " seconds");
-        if(currentSeconds > 2 * third) lines.add(ChatColor.DARK_RED + "Timer : " + currentSeconds + "/" + maxSeconds + " seconds");
+        int maxSeconds = Main.instance.getMaxTime() - 15;
+
+        if (currentSeconds > maxSeconds) {
+            return;
+        }
+        lines.add(ChatColor.GOLD + "■ ■ ■ ■ ■ ■ ■ ■ ");
+        lines.add(ChatColor.GOLD + ">> " + currentSeconds + "/" + maxSeconds );
+        lines.add(ChatColor.GOLD + "■ ■ ■ ■ ■ ■ ■ ■");
     }
 
     /**
@@ -107,5 +116,9 @@ public class Board implements Runnable {
             o.getScore(line).setScore(score);
             score--;
         }
+    }
+
+    private String blank(int size) {
+        return " ".repeat(size);
     }
 }

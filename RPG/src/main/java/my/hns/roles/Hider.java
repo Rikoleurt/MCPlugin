@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-public class Hider extends Roles{
+public class Hider extends Roles {
 
     boolean isDead = false;
     GameTimer lastMovedSince = GameTimer.fromSeconds(Main.instance,3);
