@@ -97,6 +97,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         for(Player p : seekers) {
             p.getInventory().clear();
+            p.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
 
             //p.teleport(seekerCage);
             //p.setRotation(179.9f,0);

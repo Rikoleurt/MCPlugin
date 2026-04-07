@@ -6,13 +6,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
@@ -120,7 +122,15 @@ public class Hider extends Roles {
             lastMovedSince.start();
         }
     }
-
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent event){
+        Entity entity = event.getEntity();
+        Main.instance.getLogger().info("Entity : " + entity);
+        if(event.getEntity() instanceof Player player){
+            Main.instance.getLogger().info("Player : " + player.getName());
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 1));
+        }
+    }
     @EventHandler
     public void OnDeath(PlayerDeathEvent event){
         if(event.getPlayer() != player) return;
