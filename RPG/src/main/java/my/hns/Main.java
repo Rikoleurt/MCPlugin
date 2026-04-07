@@ -31,9 +31,9 @@ public final class Main extends JavaPlugin implements Listener {
     ItemManager itemManager = new ItemManager();
     ItemStack[] items = {
             new ItemStack(Material.CAULDRON),
-            new ItemStack(Material.BARRIER),
+            new ItemStack(Material.STONE),
             new ItemStack(Material.PURPUR_PILLAR),
-            new ItemStack(Material.ANVIL),
+            new ItemStack(Material.BARREL),
             new ItemStack(Material.HONEY_BLOCK),
     };
 
@@ -57,7 +57,7 @@ public final class Main extends JavaPlugin implements Listener {
     public void addSeeker(Player player){
         hiders.remove(player);
         if(!seekers.contains(player)){
-            getLogger().info("Player joined thae seekers team!" + player.getName());
+            getLogger().info("Player joined the seekers team!" + player.getName());
             seekers.add(player);
         }
     }
@@ -67,7 +67,7 @@ public final class Main extends JavaPlugin implements Listener {
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
     public int currentTime;
-    public int maxTime = 75;
+    public int maxTime = 315;
     GameTimer timer = GameTimer.fromSeconds(this, maxTime);
     public int nbHider = -1;
 

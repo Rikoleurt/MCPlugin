@@ -103,7 +103,7 @@ public class Hider extends Roles {
     public void OnGameStart(Material material) {
         player.setGameMode(GameMode.ADVENTURE);
         player.setMaxHealth(4);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 75, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 300*20, 2));
 
         createFollowers();
 
