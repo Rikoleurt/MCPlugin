@@ -52,6 +52,9 @@ public class Hider extends Roles {
 
             var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
             Main.instance.hider_PosedBlock.put(v,this);
+
+            fallingBlockFollower.remove();
+            armorStandFollower.remove();
         });
 
     }
@@ -64,6 +67,7 @@ public class Hider extends Roles {
         armorStandFollower.setInvisible(true);
         armorStandFollower.setGravity(false);
         armorStandFollower.setMarker(true);
+        armorStandFollower.setSmall(true);
         armorStandFollower.addScoreboardTag("nointeract");
 
         fallingBlockFollower = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), material.createBlockData());
