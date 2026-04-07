@@ -97,6 +97,12 @@ public class Hider extends Roles{
     public void onPlayerMove(PlayerMoveEvent event){
         if(event.getPlayer() != player) return;
         if(isDead) return;
+
+        if(player.isInWater()) {
+            player.damage(10);
+            return;
+        }
+
         if (
             event.getFrom().getBlockX() != event.getTo().getBlockX()
             || event.getFrom().getBlockY() != event.getTo().getBlockY()
