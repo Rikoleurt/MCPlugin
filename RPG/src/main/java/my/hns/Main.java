@@ -38,8 +38,8 @@ public final class Main extends JavaPlugin implements Listener {
     };
 
     //region PlayerList
-    private final ArrayList<Player> seekers = new ArrayList<>(5);
-    private final ArrayList<Player> hiders = new ArrayList<>(5);
+    private final ArrayList<Player> seekers = new ArrayList<>();
+    private final ArrayList<Player> hiders = new ArrayList<>();
     public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
     public float seekerCageRotationYaw = 0;
     public ArrayList<Player> getSeekers() {
@@ -69,7 +69,7 @@ public final class Main extends JavaPlugin implements Listener {
     public int currentTime;
     public int maxTime = 45;
     GameTimer timer = GameTimer.fromSeconds(this, maxTime);
-    public int nbHider = hiders.size();
+    public int nbHider = -1;
 
     public void startGame() throws InterruptedException {
         hider_PosedBlock = new HashMap<>(10);
@@ -92,6 +92,9 @@ public final class Main extends JavaPlugin implements Listener {
             Hider h = new Hider(p, material);
             h.OnGameStart(material);
         }
+
+        nbHider = hiders.size();
+
 
         for(Player p : seekers) {
             p.getInventory().clear();

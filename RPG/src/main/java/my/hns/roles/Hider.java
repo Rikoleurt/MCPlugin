@@ -137,7 +137,11 @@ public class Hider extends Roles {
         Main.instance.hider_PosedBlock.remove(v,this);
         Main.instance.hider_FallingBlock.remove(fallingBlockFollower,this);
 
+        Main.instance.getLogger().info(Main.instance.nbHider+"  : " );
+
         Main.instance.nbHider--;
+
+
         if(Main.instance.haveHidersLost()){
             Main.instance.showEndGame();
             Main.instance.getTimer().cancel();
