@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
@@ -46,6 +47,12 @@ public class Hider extends Roles {
 
         .onEnd(() -> {
             p.setExp(1);
+            if(p.getWorld().getBlockData(p.getLocation()).getMaterial() != Material.AIR)
+            {
+                lastMovedSince.cancel();
+                lastMovedSince.start();
+                return;
+            }
             p.getWorld().setBlockData(p.getLocation(), material.createBlockData());
             LastPosedBlockPos = p.getLocation();
 
@@ -96,7 +103,7 @@ public class Hider extends Roles {
     public void OnGameStart(Material material) {
         player.setGameMode(GameMode.ADVENTURE);
         player.setMaxHealth(4);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 75, 5));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 75, 2));
 
         createFollowers();
 
@@ -135,6 +142,19 @@ public class Hider extends Roles {
             || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
         ){
             if(player.getGameMode() == GameMode.SPECTATOR){
+
+                boolean sameColumn =
+                        event.getFrom().getBlockX() == event.getTo().getBlockX()
+                        && event.getFrom().getBlockZ() == event.getTo().getBlockZ();
+
+                boolean changedY = event.getFrom().getBlockY() != event.getTo().getBlockY();
+
+                if (sameColumn && changedY)
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+
                 player.setGameMode(GameMode.ADVENTURE);
                 player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
 

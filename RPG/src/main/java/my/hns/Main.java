@@ -34,7 +34,7 @@ public final class Main extends JavaPlugin implements Listener {
             new ItemStack(Material.BARRIER),
             new ItemStack(Material.PURPUR_PILLAR),
             new ItemStack(Material.ANVIL),
-            new ItemStack(Material.CHEST),
+            new ItemStack(Material.HONEY_BLOCK),
     };
 
     //region PlayerList
