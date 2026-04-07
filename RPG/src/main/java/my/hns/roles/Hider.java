@@ -136,22 +136,22 @@ public class Hider extends Roles {
         fallingBlockFollower.remove();
         armorStandFollower.remove();
         lastMovedSince.cancel();
+        Vector v;
 
-        var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-        Main.instance.hider_PosedBlock.remove(v,this);
-        Main.instance.hider_FallingBlock.remove(fallingBlockFollower,this);
+        if(LastPosedBlockPos != null){
+            v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+            Main.instance.hider_PosedBlock.remove(v,this);
+            Main.instance.hider_FallingBlock.remove(fallingBlockFollower,this);
+        }
 
-        Main.instance.getLogger().info(Main.instance.nbHider+"  : " );
-
+        Main.instance.getLogger().info(Main.instance.nbHider + "  : " );
         Main.instance.nbHider--;
-
 
         if(Main.instance.haveHidersLost()){
             Main.instance.showEndGame();
             Main.instance.getTimer().cancel();
         }
     }
-
 
     public void damageHider(Player damager) {
         player.setGameMode(GameMode.ADVENTURE);
@@ -161,9 +161,5 @@ public class Hider extends Roles {
         player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
 
         player.damage(2,damager);
-    }
-
-    public boolean isAlive(){
-        return !isDead;
     }
 }

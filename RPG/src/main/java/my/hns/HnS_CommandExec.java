@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.bukkit.Sound;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,26 @@ public class HnS_CommandExec implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (sender instanceof Player player){
+            if(command.getName().equalsIgnoreCase("sound")){
+                String rawInput = args[0];
 
+                switch(rawInput.toLowerCase()){
+                    case "meow":
+                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_OCELOT_AMBIENT ,1.0f, 1.0f);
+                        break;
+                    case "cow":
+                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_COW_AMBIENT ,1.0f, 1.0f);
+                        break;
+                    case "villager":
+                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT ,1.0f, 1.0f);
+                        break;
+                    case "creeper":
+                        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CREEPER_PRIMED ,1.0f, 1.0f);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + "[ALERT] Invalid command!");
+                }
+            }
             if(command.getName().equalsIgnoreCase("changeblock")){
                 String rawInput1 = args[0];
                 String rawInput2 = args[1];
