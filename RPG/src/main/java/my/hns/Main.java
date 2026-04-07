@@ -30,11 +30,11 @@ public final class Main extends JavaPlugin implements Listener {
     Menu menu;
     ItemManager itemManager = new ItemManager();
     ItemStack[] items = {
-            new ItemStack(Material.ACACIA_BOAT),
-            new ItemStack(Material.ACACIA_DOOR),
-            new ItemStack(Material.ACACIA_FENCE),
-            new ItemStack(Material.ACACIA_LEAVES),
-            new ItemStack(Material.ACACIA_PLANKS),
+            new ItemStack(Material.CAULDRON),
+            new ItemStack(Material.BARRIER),
+            new ItemStack(Material.PURPUR_PILLAR),
+            new ItemStack(Material.ANVIL),
+            new ItemStack(Material.CHEST),
     };
 
     //region PlayerList
