@@ -151,7 +151,6 @@ public class Hider extends Roles {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 175, 0));
         if(!haveFollowers) createFollowers();
     }
-
     @EventHandler
     public void OnDeath(PlayerDeathEvent event){
         if(event.getPlayer() != player) return;

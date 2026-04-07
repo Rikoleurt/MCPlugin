@@ -5,13 +5,11 @@ import my.hns.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -29,12 +27,15 @@ public class Seekers extends Roles {
 
     @Override
     public void OnGameStart() {
-
+        Location seekerCage = Main.instance.seekerCage;
+        player.getInventory().clear();
+        player.getInventory().setItem(0, new ItemStack(Material.WOODEN_SWORD));
         player.setGameMode(GameMode.ADVENTURE);
+        player.setHealth(20);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 3));
         var timer = GameTimer.fromSeconds(Main.instance,15);
         timer.onTick(() -> {
-
+            player.teleport(seekerCage);
             int TicksLeft = timer.getTickLeft();
             if (TicksLeft % 20 == 0) {
                 final Component mainTitle = Component.text(TicksLeft / 20, NamedTextColor.WHITE);
