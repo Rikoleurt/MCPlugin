@@ -27,13 +27,16 @@ public class HnS_CommandExec implements CommandExecutor {
 
                 instance.getLogger().info(upperInput1);
                 instance.getLogger().info(upperInput2);
+
                 Material initialMaterial = Material.getMaterial(upperInput1);
                 Material finalMaterial = Material.getMaterial(upperInput2);
 
                 instance.getLogger().info("Initial Material : " + initialMaterial);
                 instance.getLogger().info("Final Material : " + finalMaterial);
+
                 ItemStack item1;
                 ItemStack item2;
+
                 try {
                     item1 = ItemStack.of(initialMaterial);
                     item2 = ItemStack.of(finalMaterial);

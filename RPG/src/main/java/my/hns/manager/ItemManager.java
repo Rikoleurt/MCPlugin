@@ -28,6 +28,7 @@ public class ItemManager {
     public void modifyItem(ItemStack item, ItemStack newItem) {
         items.set(items.indexOf(item), newItem);
     }
+
     public ItemStack getItem(int index) {
         return items.get(index);
     }
