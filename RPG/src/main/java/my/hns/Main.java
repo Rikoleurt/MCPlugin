@@ -80,7 +80,6 @@ public final class Main extends JavaPlugin implements Listener {
 //            return;
 //        }
 
-
         for (Player p : hiders) {
             ItemStack chosenItem = p.getInventory().getItem(2);
             if (chosenItem == null || chosenItem.getType() == Material.AIR) {
@@ -97,13 +96,8 @@ public final class Main extends JavaPlugin implements Listener {
 
 
         for(Player p : seekers) {
-            p.getInventory().clear();
-            p.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
-
-            //p.teleport(seekerCage);
-            //p.setRotation(179.9f,0);
+            if(seekerCage != null) p.teleport(seekerCage);
             Seekers s = new Seekers(p);
-
             s.OnGameStart();
         }
 
@@ -123,6 +117,12 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getScheduler().runTaskTimer(this, board, 0, 20);
         menu = new Menu(this);
         addItems();
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            p.getInventory().clear();
+            p.getInventory().setItem(0, menu.getItem(new ItemStack(Material.DIAMOND),"Change team"));
+            p.setGameMode(GameMode.ADVENTURE);
+        }
+
     }
 
     @Override
@@ -226,7 +226,10 @@ public final class Main extends JavaPlugin implements Listener {
                     }
 
                 })
-                .onEnd(this::showEndGame);
+                .onEnd(() -> {
+                    showEndGame();
+
+                });
         timer.start();
     }
 

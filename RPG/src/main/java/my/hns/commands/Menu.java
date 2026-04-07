@@ -86,7 +86,7 @@ public class Menu implements Listener, CommandExecutor {
         }
     }
 
-    private ItemStack getItem(ItemStack i, String name, String ... lore){
+    public ItemStack getItem(ItemStack i, String name, String ... lore){
         ItemMeta meta = i.getItemMeta();
         if(i.getType().equals(Material.SOUL_LANTERN)){
             meta.displayName(Component.text(name, TextColor.color(0x2CE4FF)));
