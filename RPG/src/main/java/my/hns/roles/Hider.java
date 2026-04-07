@@ -146,13 +146,12 @@ public class Hider extends Roles {
     }
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event){
-        Entity entity = event.getEntity();
-        Main.instance.getLogger().info("Entity : " + entity);
-        if(event.getEntity() instanceof Player player){
-            Main.instance.getLogger().info("Player : " + player.getName());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 1));
-        }
+        if(event.getEntity() != player) return;
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 175, 0));
+        if(!haveFollowers) createFollowers();
     }
+
     @EventHandler
     public void OnDeath(PlayerDeathEvent event){
         if(event.getPlayer() != player) return;

@@ -258,6 +258,8 @@ public final class Main extends JavaPlugin implements Listener {
                 p.showTitle(winTitle);
             }
         }
+        
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "bukkit:reload confirm");
     }
     public boolean haveHidersLost(){
         return nbHider == 0;
