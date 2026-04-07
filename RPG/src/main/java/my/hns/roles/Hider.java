@@ -130,6 +130,12 @@ public class Hider extends Roles {
         var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
         Main.instance.hider_PosedBlock.remove(v,this);
         Main.instance.hider_FallingBlock.remove(fallingBlockFollower,this);
+
+        Main.instance.nbHider--;
+        if(Main.instance.haveHidersLost()){
+            Main.instance.showEndGame();
+            Main.instance.getTimer().cancel();
+        }
     }
 
 
@@ -141,5 +147,9 @@ public class Hider extends Roles {
         player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
 
         player.damage(2,damager);
+    }
+
+    public boolean isAlive(){
+        return !isDead;
     }
 }
