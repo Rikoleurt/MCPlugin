@@ -42,6 +42,7 @@ public final class Main extends JavaPlugin implements Listener {
     private final ArrayList<Player> hiders = new ArrayList<>();
     public Location seekerCage = new Location(getServer().getWorld("world"), 4.5, 97, 56.5);
     public float seekerCageRotationYaw = 0;
+
     public ArrayList<Player> getSeekers() {
         return seekers;
     }
@@ -66,19 +67,17 @@ public final class Main extends JavaPlugin implements Listener {
     //region StartGame
     public HashMap<Vector,Hider> hider_PosedBlock;
     public HashMap<Entity,Hider> hider_FallingBlock;
+
     public int currentTime;
     public int maxTime = 315;
-    GameTimer timer = GameTimer.fromSeconds(this, maxTime);
     public int nbHider = -1;
-
     public boolean hasGameStarted = false;
+
+    GameTimer timer = GameTimer.fromSeconds(this, maxTime);
+
     public void startGame() throws InterruptedException {
         hider_PosedBlock = new HashMap<>();
         hider_FallingBlock = new HashMap<>();
-//        if(Seekers.size() <= 1 || Hiders.size() <= 1){
-//            getLogger().info("Not enough players!");
-//            return;
-//        }
 
         for (Player p : hiders) {
             ItemStack chosenItem = p.getInventory().getItem(2);
@@ -93,7 +92,6 @@ public final class Main extends JavaPlugin implements Listener {
         }
 
         nbHider = hiders.size();
-
 
         for(Player p : seekers) {
             if(seekerCage != null) p.teleport(seekerCage);
@@ -121,6 +119,7 @@ public final class Main extends JavaPlugin implements Listener {
             p.getInventory().clear();
             p.getInventory().setItem(0, menu.getItem(new ItemStack(Material.DIAMOND),"Change team"));
             p.setGameMode(GameMode.ADVENTURE);
+            p.clearActivePotionEffects();
         }
 
     }
@@ -170,16 +169,16 @@ public final class Main extends JavaPlugin implements Listener {
 
     //region Helpers
     private void loadCommands() {
-        HnS_CommandExec _commandExec = new HnS_CommandExec();
+        HnS_CommandExec commandExecutor = new HnS_CommandExec();
 
-        Objects.requireNonNull(getCommand("squidGame")).setExecutor(_commandExec);
-        Objects.requireNonNull(getCommand("StartGame")).setExecutor(_commandExec);
-        Objects.requireNonNull(getCommand("join")).setExecutor(_commandExec);
-        Objects.requireNonNull(getCommand("teamlist")).setExecutor(_commandExec);
-        Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("squidGame")).setExecutor(commandExecutor);
+        Objects.requireNonNull(getCommand("StartGame")).setExecutor(commandExecutor);
+        Objects.requireNonNull(getCommand("join")).setExecutor(commandExecutor);
+        Objects.requireNonNull(getCommand("teamlist")).setExecutor(commandExecutor);
+        Objects.requireNonNull(getCommand("setSeekerStart")).setExecutor(commandExecutor);
         Objects.requireNonNull(getCommand("menu")).setExecutor(new Menu(this));
-        Objects.requireNonNull(getCommand("changeblock")).setExecutor(_commandExec);
-        Objects.requireNonNull(getCommand("sound")).setExecutor(_commandExec);
+        Objects.requireNonNull(getCommand("changeblock")).setExecutor(commandExecutor);
+        Objects.requireNonNull(getCommand("sound")).setExecutor(commandExecutor);
     }
 
     private void launchGameTimer(){

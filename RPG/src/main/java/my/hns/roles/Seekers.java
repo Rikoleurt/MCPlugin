@@ -1,5 +1,6 @@
 package my.hns.roles;
 
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import my.hns.GameTimer;
 import my.hns.Main;
 import net.kyori.adventure.text.Component;
@@ -69,16 +70,19 @@ public class Seekers extends Roles {
     }
 
     @EventHandler
-    public void onPlayerAttackFallingBlock(io.papermc.paper.event.player.PrePlayerAttackEntityEvent event){
+    public void onPlayerAttackFallingBlock(PrePlayerAttackEntityEvent event){
         if(event.getPlayer() != player) return;
 
         Main.instance.getLogger().info(event.getPlayer().getName() + " attacked " + event.getAttacked().getName());
 
         var misterX = Main.instance.hider_FallingBlock.get(event.getAttacked());
-        if(misterX == null) {player.sendMessage("no Entity found in HashMap"); return;}
+
+        if(misterX == null) {
+            player.sendMessage("no Entity found in HashMap");
+            return;
+        }
 
         player.sendMessage("Found "+ misterX.player.getName());
-
         misterX.damageHider(player);
     }
 
