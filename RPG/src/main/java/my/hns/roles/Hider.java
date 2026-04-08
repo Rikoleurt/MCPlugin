@@ -2,17 +2,12 @@ package my.hns.roles;
 
 import my.hns.GameTimer;
 import my.hns.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -24,17 +19,19 @@ public class Hider extends Roles {
     boolean isDead = false;
     GameTimer lastMovedSince = GameTimer.fromSeconds(Main.instance,3);
     Location LastPosedBlockPos;
-
     boolean haveFollowers = false;
-    ArmorStand armorStandFollower;
+    ArmorStand armorStand;
     FallingBlock fallingBlockFollower;
     BukkitTask taskFollower;
-
+    Main instance = Main.instance;
     Material material;
 
     public Hider(Player p, Material material){
         super(p);
         this.material = material;
+
+        World world = p.getWorld();
+        BlockData blockData = world.getBlockData(p.getLocation());
 
         lastMovedSince
         .onStart(() ->{
@@ -44,37 +41,37 @@ public class Hider extends Roles {
             if(1 - lastMovedSince.getPercentageLeft() > .05f)
                 p.setExp(1 - lastMovedSince.getPercentageLeft());
         })
-
         .onEnd(() -> {
             p.setExp(1);
-            if(p.getWorld().getBlockData(p.getLocation()).getMaterial() != Material.AIR)
-            {
+            if(blockData.getMaterial() != Material.AIR) { // Cancel timer if there's a block on the player position
                 lastMovedSince.cancel();
                 lastMovedSince.start();
                 return;
             }
-            p.getWorld().setBlockData(p.getLocation(), material.createBlockData());
-            LastPosedBlockPos = p.getLocation();
-
-            Main.instance.getLogger().info(LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
+            // Else set a block on the player position
+            world.setBlockData(p.getLocation(), material.createBlockData());
+            LastPosedBlockPos = p.getLocation(); // Get the current location of the player
             p.setGameMode(GameMode.SPECTATOR);
-            Main.instance.getLogger().info("LE 2 "  + LastPosedBlockPos.getBlockX() + " " + LastPosedBlockPos.getBlockY() + " " + LastPosedBlockPos.getBlockZ() + " ");
+            Vector v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
 
-            var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-            Main.instance.hider_PosedBlock.put(v,this);
-
-            removeFollowers();
+            instance.hider_PosedBlock.put(v,this); // Store the vector inside the HashMap
+            instance.getLogger().info("[Hider.OnEnd()] Hider = " + p.getName() + ", Vector = " + instance.hider_PosedBlock.get(p.getLocation().toVector()));
+            
+            removeFollowers(); // Remove the falling block and the armor stand that follows the player
         });
 
     }
 
-    void createFollowers(){
-        armorStandFollower = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-        armorStandFollower.setInvisible(true);
-        armorStandFollower.setGravity(false);
-        armorStandFollower.setMarker(true);
-        armorStandFollower.setSmall(true);
-        armorStandFollower.addScoreboardTag("nointeract");
+    /**
+     * Creates the armor stand and the falling block that'll follow the player
+     */
+    private void createFollowers(){
+        armorStand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
+        armorStand.setInvisible(true);
+        armorStand.setGravity(false);
+        armorStand.setMarker(true);
+        armorStand.setSmall(true);
+        armorStand.addScoreboardTag("nointeract");
 
         fallingBlockFollower = player.getLocation().getWorld().spawnFallingBlock(player.getLocation(), material.createBlockData());
         fallingBlockFollower.setDropItem(false);
@@ -82,19 +79,19 @@ public class Hider extends Roles {
         fallingBlockFollower.shouldAutoExpire(false);
 
         Main.instance.hider_FallingBlock.put(fallingBlockFollower,this);
-        Main.instance.hider_FallingBlock.put(armorStandFollower,this);
+        Main.instance.hider_FallingBlock.put(armorStand,this);
 
-        armorStandFollower.addPassenger(fallingBlockFollower);
+        armorStand.addPassenger(fallingBlockFollower);
         haveFollowers = true;
     }
-    void removeFollowers(){
+    private void removeFollowers(){
 
-        Main.instance.hider_FallingBlock.remove(fallingBlockFollower);
-        Main.instance.hider_FallingBlock.remove(armorStandFollower,this);
+        instance.hider_FallingBlock.remove(fallingBlockFollower);
+        instance.hider_FallingBlock.remove(armorStand,this);
 
         fallingBlockFollower.remove();
-        armorStandFollower.remove();
-        armorStandFollower = null;
+        armorStand.remove();
+        armorStand = null;
         fallingBlockFollower = null;
 
         haveFollowers = false;
@@ -112,7 +109,7 @@ public class Hider extends Roles {
             if (!haveFollowers) return;
 
             Location loc2 = player.getLocation().add(0, 0.05, 0);
-            armorStandFollower.teleport(loc2);
+            armorStand.teleport(loc2);
 
         }, 1, 0L);
     }
@@ -128,16 +125,16 @@ public class Hider extends Roles {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
         if(event.getPlayer() != player) return;
-        if(!Main.instance.hasGameStarted) return;
+        if(!instance.hasGameStarted) return;
         if(isDead) return;
-
         if(player.isInWater()) {
+            instance.getLogger().info(player.getName() + " in the water");
             player.damage(10);
             return;
         }
 
         if (
-            event.getFrom().getBlockX() != event.getTo().getBlockX()
+                event.getFrom().getBlockX() != event.getTo().getBlockX()
             || event.getFrom().getBlockY() != event.getTo().getBlockY()
             || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
         ){
@@ -158,8 +155,11 @@ public class Hider extends Roles {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.getWorld().setBlockData(LastPosedBlockPos, Material.AIR.createBlockData());
 
-                var v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-                Main.instance.hider_PosedBlock.remove(v);
+                Vector v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
+                instance.getLogger().info("[OnPlayerMove] Person = " + instance.hider_PosedBlock.get(v) + ", Vector = " + v);
+
+                instance.hider_PosedBlock.remove(v);
+                instance.getLogger().info("[OnPlayerMove] Person = " + instance.hider_PosedBlock.get(v) + ", Vector = " + v);
 
                 createFollowers();
             }
@@ -172,14 +172,14 @@ public class Hider extends Roles {
     public void onDamage(EntityDamageByEntityEvent event){
         if(event.getEntity() != player) return;
 
+        instance.getLogger().info("[OnDamage] Hider = " + event.getEntity().getLocation().toVector() + ", Vector = " + instance.hider_PosedBlock.get(event.getEntity().getLocation().toVector()));
+
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 175, 0));
         if(!haveFollowers) createFollowers();
     }
     @EventHandler
     public void OnDeath(PlayerDeathEvent event){
         if(event.getPlayer() != player) return;
-
-        Main.instance.hasGameStarted = false;
 
         isDead = true;
         removeFollowers();
@@ -191,15 +191,16 @@ public class Hider extends Roles {
 
         if(LastPosedBlockPos != null){
             v = new Vector(LastPosedBlockPos.getBlockX(),LastPosedBlockPos.getBlockY(),LastPosedBlockPos.getBlockZ());
-            Main.instance.hider_PosedBlock.remove(v,this);
+            instance.hider_PosedBlock.remove(v,this);
         }
 
-        Main.instance.getLogger().info(Main.instance.nbHider + "  : " );
-        Main.instance.nbHider--;
+        instance.nbHider--;
+        instance.getLogger().info("Number of hider left : " + instance.nbHider);
 
-        if(Main.instance.haveHidersLost()){
-            Main.instance.showEndGame();
-            Main.instance.getTimer().cancel();
+        if(instance.haveHidersLost()){
+            instance.hasGameStarted = false;
+            instance.showEndGame();
+            instance.getTimer().cancel();
         }
     }
 
